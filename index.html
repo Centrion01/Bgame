@@ -2,519 +2,141 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Игра "Тратить и продавать деньги" — Улучшенная версия</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Простой чат</title>
 <style>
-    /* Сброс и базовые стили */
-    * {
-        box-sizing: border-box;
-    }
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: #e8f0fe;
-        margin: 0;
-        padding: 0 10px 40px;
-        display: flex;
-        justify-content: center;
-        min-height: 100vh;
-        color: #222;
-    }
-    main {
-        max-width: 700px;
-        width: 100%;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        padding: 20px 30px 40px;
-        margin-top: 80px;
-        position: relative;
-    }
-    h1 {
-        text-align: center;
-        margin-bottom: 5px;
-        color: #1a4d2e;
-        font-weight: 700;
-        font-size: 2rem;
-        user-select: none;
-    }
-    /* Фиксированный блок с деньгами сверху */
-    #money {
-        position: fixed;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        background: #2c9a4d;
-        color: white;
-        padding: 15px 30px;
-        font-size: 26px;
-        font-weight: 700;
-        border-radius: 0 0 15px 15px;
-        box-shadow: 0 3px 8px rgba(0,0,0,0.25);
-        z-index: 1000;
-        width: 100%;
-        max-width: 700px;
-        text-align: center;
-        user-select: none;
-    }
-    /* Контент с отступом сверху */
-    .content {
-        padding-top: 90px;
-    }
-    /* Список товаров */
-    .items {
-        display: grid;
-        grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
-        gap: 20px;
-        margin-bottom: 30px;
-    }
-    .item-card {
-        background: #fefefe;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-        padding: 15px 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        transition: transform 0.3s ease;
-        user-select: none;
-    }
-    .item-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-    }
-    .item-image {
-        width: 150px;
-        height: 150px;
-        object-fit: contain;
-        margin-bottom: 12px;
-        filter: drop-shadow(0 0 1px rgba(0,0,0,0.1));
-    }
-    .item-title {
-        font-weight: 700;
-        font-size: 1.15rem;
-        color: #2a7f62;
-        margin-bottom: 6px;
-        text-align: center;
-    }
-    .item-price {
-        font-size: 1rem;
-        color: #555;
-        margin-bottom: 12px;
-    }
-    .item-controls {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        width: 100%;
-        justify-content: center;
-    }
-    input.qty {
-        width: 60px;
-        padding: 6px;
-        font-size: 1rem;
-        border: 1.8px solid #ccc;
-        border-radius: 6px;
-        text-align: center;
-        transition: border-color 0.3s;
-    }
-    input.qty:focus {
-        outline: none;
-        border-color: #2c9a4d;
-        box-shadow: 0 0 6px #2c9a4daa;
-    }
-    button {
-        padding: 8px 14px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        border-radius: 8px;
-        border: none;
-        color: white;
-        transition: background-color 0.3s ease;
-        user-select: none;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    }
-    button.buy {
-        background-color: #2c9a4d;
-    }
-    button.buy:hover:not(:disabled) {
-        background-color: #237a3e;
-    }
-    button.sell {
-        background-color: #d9534f;
-    }
-    button.sell:hover:not(:disabled) {
-        background-color: #b53b3a;
-    }
-    button:disabled {
-        background-color: #bbb;
-        cursor: not-allowed;
-        box-shadow: none;
-    }
-    /* Сообщение */
-    #message {
-        margin-top: 15px;
-        text-align: center;
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: #d9534f;
-        min-height: 28px;
-        user-select: none;
-    }
-    /* Блок покупок */
-    #purchases {
-        background: #fefefe;
-        padding: 20px 25px;
-        border-radius: 12px;
-        box-shadow: 0 3px 12px rgba(0,0,0,0.1);
-        user-select: none;
-    }
-    #purchases h2 {
-        margin-top: 0;
-        font-size: 1.6rem;
-        color: #2a7f62;
-        text-align: center;
-        margin-bottom: 15px;
-    }
-    #purchase-list {
-        list-style: none;
-        padding-left: 0;
-        font-size: 1.1rem;
-        color: #444;
-        max-height: 180px;
-        overflow-y: auto;
-        margin-bottom: 15px;
-    }
-    #purchase-list li {
-        padding: 6px 0;
-        border-bottom: 1px solid #ddd;
-        display: flex;
-        justify-content: space-between;
-        font-weight: 600;
-    }
-    #purchase-list li:last-child {
-        border-bottom: none;
-    }
-    #total-sum {
-        font-weight: 700;
-        font-size: 1.3rem;
-        color: #2a7f62;
-        text-align: center;
-        margin-bottom: 10px;
-    }
-    #transaction-count {
-        text-align: center;
-        font-size: 1rem;
-        color: #555;
-        margin-bottom: 10px;
-        user-select: none;
-    }
-    /* Адаптив */
-    @media (max-width: 480px) {
-        .items {
-            grid-template-columns: 1fr;
-        }
-        input.qty {
-            width: 50px;
-            font-size: 0.9rem;
-        }
-        button {
-            font-size: 0.9rem;
-            padding: 7px 10px;
-        }
-    }
+body {
+  font-family: Arial, sans-serif;
+  background: #f3f3f3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  height: 100vh;
+}
+#login, #chat {
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  margin-top: 50px;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.2);
+}
+#chat {
+  display: none;
+}
+input[type="text"], input[type="password"] {
+  width: 100%;
+  padding: 8px;
+  margin: 6px 0;
+  box-sizing: border-box;
+}
+button {
+  width: 100%;
+  padding: 10px;
+  background: #0078d7;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+button:hover {
+  background: #005fa3;
+}
+#messages {
+  height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.msg {
+  margin-bottom: 8px;
+}
+.name {
+  font-weight: bold;
+}
 </style>
 </head>
 <body>
-<div id="money">Деньги: 100,000,000,000 ₽</div>
 
-<main>
-		
-    <h1>Игра "Тратить и продавать деньги"</h1>
-    <div class="content">
-        <div class="items" aria-label="Список товаров">
-            <!-- Карточки товаров будут создаваться динамически -->
-        </div>
+<div id="login">
+  <h2>Регистрация / Вход</h2>
+  <input type="text" id="username" placeholder="Имя" />
+  <input type="password" id="password" placeholder="Пароль" />
+  <button id="registerBtn">Регистрация</button>
+  <button id="loginBtn">Вход</button>
+</div>
 
-        <div id="message" role="alert" aria-live="polite"></div>
-
-        <div id="purchases" aria-live="polite" aria-atomic="true" aria-relevant="all">
-            <h2>Ваши покупки</h2>
-            <ul id="purchase-list" aria-label="Список купленных товаров">
-                <!-- Покупки будут обновляться динамически -->
-            </ul>
-            <div id="total-sum">Общая сумма покупок: 0 $</div>
-            <div id="transaction-count">Сделано транзакций: 0</div>
-        </div>
-    </div>
-</main>
+<div id="chat">
+  <h2>Чат</h2>
+  <div id="messages"></div>
+  <input type="text" id="messageInput" placeholder="Введите сообщение..." />
+  <button id="sendBtn">Отправить</button>
+</div>
 
 <script>
-(() => {
-    // Начальные данные
-    let money = 430000000000;
-    let transactionCount = 0;
+const users = JSON.parse(localStorage.getItem('users') || '{}');
+const messages = JSON.parse(localStorage.getItem('messages') || '[]');
+const usernameInput = document.getElementById('username');
+const passwordInput = document.getElementById('password');
+const registerBtn = document.getElementById('registerBtn');
+const loginBtn = document.getElementById('loginBtn');
+const loginDiv = document.getElementById('login');
+const chatDiv = document.getElementById('chat');
+const messagesDiv = document.getElementById('messages');
+const messageInput = document.getElementById('messageInput');
+const sendBtn = document.getElementById('sendBtn');
 
-    // Цены
-    const products = [
-        
-        { name: "Наушники", price: 30, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-acs-1109-tw-0704_1.png" },
-        { name: "Кроссовки", price: 62, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-clh-1119-cs-0010_1_1_.png" },
-        { name: "Розы", price: 74, img: "https://kartinki.pics/pics/uploads/posts/2022-09/1663017246_15-kartinkin-net-p-shikarnii-buket-roz-na-prozrachnom-fone-kr-15.jpg" },
-        { name: "Айфон 12 (128GB)", price: 800, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/6/7/6793065-1602664453.jpg" },
-        { name: "Айфон 13 (128GB", price: 1290, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-sbp-1105-sm-1511.png" },
-        { name: "Айфон 14 (256 GB)", price: 1600, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/e/1/e12eeae2_2.png" },
-        { name: "Айфон 15 (512 GB)", price: 2800, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-sbp-1105-sm-2467_1.png" },
-        { name: "Айфон 16 (1 TB)", price: 4000, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-sbp-1105-sm-2890_1.png" },
-        { name: "Холодильник", price: 3500, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-mt-bmt-1108-rb-0537_5.png" },
-        { name: "Кондиционер", price: 1200, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-mt-bmt-1198-ac-0106_102000_1.png" },
-        { name: "PlayStation 5 (1TB)", price: 1300, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-gaf-1106-gc-0052_1.png" },
-        { name: "The Catalina", price: 700, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/1/_/1_28.png" },
-        { name: "Orient", price: 500, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-wch-1106-wt-1141_1.png" },
-        { name: "Сейф", price: 5200, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-vrt-1114-sf-0173_1.png" },
-        { name: "Ноутбук Apple", price: 3400, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-kot-1114-nb-2892_1.png" },
-        { name: "Ноутбук Lenovo", price: 1890, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-kot-1114-nb-2661_1.png" },
-        { name: "Ноутбук Asus", price: 2300, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-kot-1114-nb-2944_10000.png" },
-        { name: "iPad Air 13-inch", price: 2900, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-tbq-1105-tb-0720_1.png" },
-        { name: "Тибетский Мастиф", price: 25000, img: "https://kartinki.pics/pics/uploads/posts/2022-09/1663731875_2-kartinkin-net-p-bolshaya-pushistaya-rizhaya-sobaka-pintere-2.jpg" },
-        { name: "Хай-Тек #1", price: 45000, img: "https://www.ccnova.ru/upload/iblock/603/1yttky8xzwn8454eqcnhgislzycwboof/370_2_novatsiya.jpg" },
-        { name: "Хай-Тек #2", price: 350000, img: "https://kartinki.pics/uploads/posts/2022-07/1657688548_4-kartinkin-net-p-kartinki-bolshoi-dom-4.jpg" },
-        { name: "Стоун Вуд", price: 1000000, img: "https://kartinki.pics/uploads/posts/2022-07/1657688587_11-kartinkin-net-p-kartinki-bolshoi-dom-11.jpg" },
-        { name: "Загородный дом", price: 12000000, img: "https://kartinki.pics/uploads/posts/2022-07/1657688541_15-kartinkin-net-p-kartinki-bolshoi-dom-15.jpg" },
-        { name: "Особняк", price: 46000000, img: "https://kartinki.pics/uploads/posts/2022-07/1657688511_1-kartinkin-net-p-kartinki-bolshoi-dom-1.jpg" },
-        { name: "Особняк в Нью-Йорке", price: 55000000, img: "https://kartinki.pics/uploads/posts/2022-07/1657688542_30-kartinkin-net-p-kartinki-bolshoi-dom-30.jpg" },
-        { name: "Mercedes E V2112", price: 50000, img: "https://static.wikia.nocookie.net/businessempire/images/c/c7/Cars_marcedes_e_v2112.png/revision/latest?cb=20230212065206" },
-        { name: "Auddi RS70", price: 56000, img: "https://static.wikia.nocookie.net/businessempire/images/b/b5/Cars_auddi_rr_7.png/revision/latest?cb=20230212065200" },
-        { name: "Аурус Сенатор", price: 383000, img: "https://static.wikia.nocookie.net/businessempire/images/8/8b/Cars_auros_senator.png/revision/latest?cb=20230212065201" },
-        { name: "Ламборгини Миора", price: 480000, img: "https://static.wikia.nocookie.net/businessempire/images/3/39/Cars_lambarginy_myora.png/revision/latest?cb=20230212065205" },
-        { name: "Ролс-Ройс Куллиан", price: 550000, img: "https://static.wikia.nocookie.net/businessempire/images/6/61/Cars_rols_roice_kullynan.png/revision/latest?cb=20230212065208" },
-        { name: "Ролс-Ройс Фантом", price: 626600, img: "https://static.wikia.nocookie.net/businessempire/images/4/46/Cars_rols_roice_fantome.png/revision/latest?cb=20230212065208" },
-        { name: "Сенво ZT1", price: 1000000, img: "https://static.wikia.nocookie.net/businessempire/images/2/23/Cars_senwo_zt1.png/revision/latest?cb=20230212065208" },
-        { name: "Макларен В1", price: 1320000, img: "https://static.wikia.nocookie.net/businessempire/images/3/35/Cars_macleran_b1.png/revision/latest?cb=20230212065205" },
-        { name: "Кенигзегг", price: 2100000, img: "https://static.wikia.nocookie.net/businessempire/images/8/82/Cars_konigzegg_own.png/revision/latest?cb=20230212065204" },
-        { name: "Ламборгини Венено", price: 3800000, img: "https://static.wikia.nocookie.net/businessempire/images/5/58/Cars_lambarginy_weneno_roadster.png/revision/latest?cb=20230212065205" },
-        { name: "Бугатти Деева", price: 5470000, img: "https://static.wikia.nocookie.net/businessempire/images/a/a3/Cars_buggaty_deeva.png/revision/latest?cb=20230212065201" },
-        { name: "Мерседес Майбах Эсколеро", price: 8000000, img: "https://static.wikia.nocookie.net/businessempire/images/5/55/Cars_marcedes_maybech_exolero.png/revision/latest?cb=20230212065206" },
-        { name: "Бугатти Центодиетти", price: 9000000, img: "https://static.wikia.nocookie.net/businessempire/images/5/5e/Cars_buggaty_centodiechi.png/revision/latest?cb=20230212065202" },
-        { name: "Бугатти Нуар", price: 19000000, img: "https://static.wikia.nocookie.net/businessempire/images/9/92/Cars_buggaty_le_voyture_noare.png/revision/latest?cb=20230212065201" },
-        { name: "Ролс-Ройс Bout Tale", price: 28000000, img: "https://static.wikia.nocookie.net/businessempire/images/f/fc/Cars_rols_roice_bout_tale.png/revision/latest?cb=20230212065208" },
-        { name: "Мерседес Аватар", price: 35000000, img: "https://static.wikia.nocookie.net/businessempire/images/c/c1/Cars_marcedes_vizio_awtr.png/revision/latest?cb=20230212065207" },
-        { name: "Феррари 250 GDO", price: 50000000, img: "https://static.wikia.nocookie.net/businessempire/images/9/9e/Cars_ferarry_250_gdo.png" },
-        { name: "Корона Елизаветы II", price: 1000000000, img: "https://upload.wikimedia.org/wikipedia/commons/1/19/Imperial_State_Crown.png" },
-        
-        
-        
-        ];
-    
+let currentUser = null;
 
-    // Объект для хранения количества покупок
-    const purchases = {};
-    products.forEach(p => purchases[p.name] = 0);
+// Отрисовка сообщений
+function renderMessages() {
+  messagesDiv.innerHTML = messages.map(m => 
+    `<div class="msg"><span class="name">${m.name}:</span> ${m.text}</div>`
+  ).join('');
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
 
-    // Элементы DOM
-    const moneyDisplay = document.getElementById('money');
-    const itemsContainer = document.querySelector('.items');
-    const message = document.getElementById('message');
-    const purchaseList = document.getElementById('purchase-list');
-    const totalSumDisplay = document.getElementById('total-sum');
-    const transactionCountDisplay = document.getElementById('transaction-count');
+// Регистрация
+registerBtn.onclick = () => {
+  const name = usernameInput.value.trim();
+  const pass = passwordInput.value.trim();
+  if (!name || !pass) return alert('Введите имя и пароль!');
+  if (users[name]) return alert('Пользователь уже существует!');
+  users[name] = pass;
+  localStorage.setItem('users', JSON.stringify(users));
+  alert('Регистрация успешна! Теперь войдите.');
+};
 
-    // Функция обновления отображения денег
-    function updateMoney() {
-        moneyDisplay.textContent = `Деньги: ${money} $`;
-    }
+// Вход
+loginBtn.onclick = () => {
+  const name = usernameInput.value.trim();
+  const pass = passwordInput.value.trim();
+  if (!name || !pass) return alert('Введите имя и пароль!');
+  if (!users[name] || users[name] !== pass) return alert('Неверные имя или пароль!');
+  currentUser = name;
+  loginDiv.style.display = 'none';
+  chatDiv.style.display = 'block';
+  renderMessages();
+};
 
-    // Функция создания карточек товаров
-    function createItemCards() {
-        products.forEach(product => {
-            const card = document.createElement('div');
-            card.className = 'item-card';
-            card.setAttribute('role', 'group');
-            card.setAttribute('aria-label', `${product.name}, цена ${product.price} долларов`);
+// Отправка сообщения
+sendBtn.onclick = () => {
+  const text = messageInput.value.trim();
+  if (!text) return;
+  messages.push({ name: currentUser, text });
+  localStorage.setItem('messages', JSON.stringify(messages));
+  messageInput.value = '';
+  renderMessages();
+};
 
-            card.innerHTML = `
-                <img src="${product.img}" alt="${product.name}" class="item-image" />
-                <div class="item-title">${product.name}</div>
-                <div class="item-price">${product.price.toLocaleString()} $</div>
-                <div class="item-controls">
-                    <button class="sell" data-name="${product.name}" aria-label="Продать ${product.name}" disabled>Продать</button>
-                    <input type="number" min="1" value="1" class="qty" data-name="${product.name}" aria-label="Количество ${product.name}" />
-                    <button class="buy" data-name="${product.name}" aria-label="Купить ${product.name}">Купить</button>
-                </div>
-            `;
-            itemsContainer.appendChild(card);
-        });
-    }
-
-    // Функция обновления списка покупок
-    function updatePurchases() {
-        purchaseList.innerHTML = '';
-        let total = 0;
-        for (const item in purchases) {
-            const count = purchases[item];
-            if (count > 0) {
-                const li = document.createElement('li');
-                li.textContent = `${item}`;
-                const span = document.createElement('span');
-                span.textContent = `${count} шт.`;
-                li.appendChild(span);
-                purchaseList.appendChild(li);
-                total += count * products.find(p => p.name === item).price;
-            }
-        }
-        if (purchaseList.children.length === 0) {
-            const li = document.createElement('li');
-            li.textContent = "Пока нет покупок";
-            li.style.fontStyle = 'italic';
-            li.style.color = '#888';
-            purchaseList.appendChild(li);
-        }
-        totalSumDisplay.textContent = `Общая сумма покупок: ${total.toLocaleString()} $`;
-    }
-
-    // Получить элементы управления для товара по имени
-    function getControls(name) {
-        const card = [...itemsContainer.children].find(card => {
-            return card.querySelector('button.buy').getAttribute('data-name') === name;
-        });
-        if (!card) return null;
-        return {
-            buyBtn: card.querySelector('button.buy'),
-            sellBtn: card.querySelector('button.sell'),
-            qtyInput: card.querySelector('input.qty'),
-        };
-    }
-
-    // Обновить состояние кнопок (включены/отключены)
-    function updateButtons() {
-        products.forEach(product => {
-            const controls = getControls(product.name);
-            if (!controls) return;
-
-            let qty = parseInt(controls.qtyInput.value);
-            if (isNaN(qty) || qty < 1) {
-                qty = 1;
-                controls.qtyInput.value = qty;
-            }
-
-            // Ограничение при продаже — нельзя продать больше, чем есть
-            if (controls.sellBtn) {
-                controls.sellBtn.disabled = purchases[product.name] < qty;
-            }
-
-            // Убираем ограничение при покупке — кнопка всегда активна
-            if (controls.buyBtn) {
-                controls.buyBtn.disabled = false;
-            }
-        });
-    }
-
-    // Проверка окончания игры
-    function checkGameOver() {
-        if (money === 0) {
-            message.textContent = 'Поздравляем! Вы потратили все деньги!';
-            // Можно добавить дополнительные действия, например, блокировать покупки
-        } else {
-            message.textContent = '';
-        }
-    }
-
-    // Обработчик покупки
-    function handleBuy(name) {
-        const controls = getControls(name);
-        if (!controls) return;
-        let qty = parseInt(controls.qtyInput.value);
-        if (isNaN(qty) || qty < 1) qty = 1;
-
-        const price = products.find(p => p.name === name).price;
-        let totalCost = price * qty;
-
-        if (totalCost > money) {
-            qty = Math.floor(money / price);
-            if (qty === 0) {
-                message.textContent = 'Недостаточно денег для покупки.';
-                return;
-            }
-            totalCost = price * qty;
-            controls.qtyInput.value = qty;
-        }
-
-        money -= totalCost;
-        purchases[name] += qty;
-        transactionCount++;
-        updateMoney();
-        updatePurchases();
-        updateButtons();
-        checkGameOver();
-        message.textContent = `Вы купили ${qty} ${name}${qty > 1 ? 'ов' : ''} за ${totalCost.toLocaleString()} $.`;
-        transactionCountDisplay.textContent = `Сделано транзакций: ${transactionCount}`;
-    }
-
-    // Обработчик продажи
-    function handleSell(name) {
-        const controls = getControls(name);
-        if (!controls) return;
-        let qty = parseInt(controls.qtyInput.value);
-        if (isNaN(qty) || qty < 1) qty = 1;
-
-        if (purchases[name] < qty) {
-            qty = purchases[name];
-            if (qty === 0) {
-                message.textContent = `У вас нет ${name} для продажи.`;
-                return;
-            }
-            controls.qtyInput.value = qty;
-        }
-
-        const price = products.find(p => p.name === name).price;
-        const totalGain = price * qty;
-
-        purchases[name] -= qty;
-        money += totalGain;
-        transactionCount++;
-        updateMoney();
-        updatePurchases();
-        updateButtons();
-        checkGameOver();
-        message.textContent = `Вы продали ${qty} ${name}${qty > 1 ? 'ов' : ''} и получили ${totalGain.toLocaleString()} $.`;
-        transactionCountDisplay.textContent = `Сделано транзакций: ${transactionCount}`;
-    }
-
-    // Инициализация
-    function init() {
-        createItemCards();
-        updateMoney();
-        updatePurchases();
-        updateButtons();
-
-        // Назначаем события
-        products.forEach(product => {
-            const controls = getControls(product.name);
-            if (!controls) return;
-
-            // Ограничение ввода количества
-            controls.qtyInput.addEventListener('input', () => {
-                let val = parseInt(controls.qtyInput.value);
-                if (isNaN(val) || val < 1) {
-                    controls.qtyInput.value = 1;
-                    val = 1;
-                }
-                // Ограничение только при продаже
-                if (controls.sellBtn && val > purchases[product.name]) {
-                    controls.qtyInput.value = purchases[product.name];
-                }
-                updateButtons();
-            });
-
-            controls.buyBtn.addEventListener('click', () => handleBuy(product.name));
-            controls.sellBtn.addEventListener('click', () => handleSell(product.name));
-        });
-    }
-
-    init();
-   
-    
-})();
+// Позволяет отправлять Enter
+messageInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') sendBtn.click();
+});
 </script>
+
 </body>
 </html>
