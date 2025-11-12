@@ -329,7 +329,6 @@ const categories = {
     ]
 };
 const allProducts = [
-    // general
     { name: "Наушники", price: 30, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-acs-1109-tw-0704_1.png" },
     { name: "Кроссовки", price: 62, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-clh-1119-cs-0010_1_1_.png" },
     { name: "Розы", price: 74, img: "https://kartinki.pics/pics/uploads/posts/2022-09/1663017246_15-kartinkin-net-p-shikarnii-buket-roz-na-prozrachnom-fone-kr-15.jpg" },
@@ -349,14 +348,12 @@ const allProducts = [
     { name: "Ноутбук Asus", price: 2300, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-kot-1114-nb-2944_10000.png" },
     { name: "iPad Air 13-inch", price: 2900, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-tbq-1105-tb-0720_1.png" },
     { name: "Тибетский Мастиф", price: 5000, img: "https://kartinki.pics/pics/uploads/posts/2022-09/1663731875_2-kartinkin-net-p-bolshaya-pushistaya-rizhaya-sobaka-pintere-2.jpg" },
-    // houses
     { name: "Хай-Тек #1", price: 45000, img: "https://www.ccnova.ru/upload/iblock/603/1yttky8xzwn8454eqcnhgislzycwboof/370_2_novatsiya.jpg" },
     { name: "Хай-Тек #2", price: 350000, img: "https://kartinki.pics/uploads/posts/2022-07/1657688548_4-kartinkin-net-p-kartinki-bolshoi-dom-4.jpg" },
     { name: "Стоун Вуд", price: 1000000, img: "https://kartinki.pics/uploads/posts/2022-07/1657688587_11-kartinkin-net-p-kartinki-bolshoi-dom-11.jpg" },
     { name: "Загородный дом", price: 12000000, img: "https://kartinki.pics/uploads/posts/2022-07/1657688541_15-kartinkin-net-p-kartinki-bolshoi-dom-15.jpg" },
     { name: "Особняк", price: 46000000, img: "https://kartinki.pics/uploads/posts/2022-07/1657688511_1-kartinkin-net-p-kartinki-bolshoi-dom-1.jpg" },
     { name: "Особняк в Нью-Йорке", price: 55000000, img: "https://kartinki.pics/uploads/posts/2022-07/1657688542_30-kartinkin-net-p-kartinki-bolshoi-dom-30.jpg" },
-    // cars
     { name: "Mercedes E V2112", price: 50000, img: "https://static.wikia.nocookie.net/businessempire/images/c/c7/Cars_marcedes_e_v2112.png" },
     { name: "Auddi RS70", price: 56000, img: "https://static.wikia.nocookie.net/businessempire/images/b/b5/Cars_auddi_rr_7.png" },
     { name: "Аурус Сенатор", price: 383000, img: "https://static.wikia.nocookie.net/businessempire/images/8/8b/Cars_auros_senator.png" },
@@ -374,13 +371,11 @@ const allProducts = [
     { name: "Ролс-Ройс Bout Tale", price: 28000000, img: "https://static.wikia.nocookie.net/businessempire/images/f/fc/Cars_rols_roice_bout_tale.png" },
     { name: "Мерседес Аватар", price: 35000000, img: "https://static.wikia.nocookie.net/businessempire/images/c/c1/Cars_marcedes_vizio_awtr.png" },
     { name: "Феррари 250 GDO", price: 50000000, img: "https://static.wikia.nocookie.net/businessempire/images/9/9e/Cars_ferarry_250_gdo.png" },
-    // planes
     { name: "LEONARDO AW09 ", price: 3500000, img: "https://topflight.ru/upload/medialibrary/e37/AW09_Security-services_robust-and-versatile_960400.jpg" },
     { name: "Bell 525", price: 15000000, img: "https://topflight.ru/upload/medialibrary/360/bell-525-at-sunset-landed-hero.jpg" },
     { name: "ATR EVO", price: 21600000, img: "https://cdn.airlines-inform.ru/upload/iblock/c5a/ATR-EVO.jpg" },
     { name: "DASSAULT FALCON 6X ", price: 47000000, img: "https://topflight.ru/upload/medialibrary/603/18_Falcon6X_USB53_Kopie.jpg" },
     { name: "Боинг 777-9", price: 442200000, img: "https://cdn.airlines-inform.ru/upload/iblock/a28/Boeing-777-9X.jpg" },
-    // other
     { name: "Корона Елизаветы II", price: 1000000000, img: "https://upload.wikimedia.org/wikipedia/commons/1/19/Imperial_State_Crown.png" }
 ];
 // --- Разделение products по категориям для вывода в нужный таб ---
@@ -492,6 +487,7 @@ function handleBuy(category, name) {
     updatePurchases();
     updateButtons();
     checkGameOver();
+    saveGameState(); // сохраняем в localStorage после покупки
     message.textContent = `Вы купили ${qty} ${name}${qty > 1 ? 'ов' : ''} за ${totalCost.toLocaleString()} $.`;
     transactionCountDisplay.textContent = `Сделано транзакций: ${transactionCount}`;
 }
@@ -517,6 +513,7 @@ function handleSell(category, name) {
     updatePurchases();
     updateButtons();
     checkGameOver();
+    saveGameState(); // сохраняем в localStorage после продажи
     message.textContent = `Вы продали ${qty} ${name}${qty > 1 ? 'ов' : ''} и получили ${totalGain.toLocaleString()} $.`;
     transactionCountDisplay.textContent = `Сделано транзакций: ${transactionCount}`;
 }
@@ -562,6 +559,27 @@ function addEventHandlers() {
         });
     });
 }
+// Сохранение состояния игры в localStorage
+function saveGameState() {
+    localStorage.setItem('money', money.toString());
+    localStorage.setItem('transactionCount', transactionCount.toString());
+    localStorage.setItem('purchases', JSON.stringify(purchases));
+}
+// Загрузка состояния игры из localStorage
+function loadGameState() {
+    const savedMoney = localStorage.getItem('money');
+    const savedTransactionCount = localStorage.getItem('transactionCount');
+    const savedPurchases = localStorage.getItem('purchases');
+    if (savedMoney !== null) money = Number(savedMoney);
+    if (savedTransactionCount !== null) transactionCount = Number(savedTransactionCount);
+    if (savedPurchases !== null) {
+        const parsedPurchases = JSON.parse(savedPurchases);
+        Object.keys(purchases).forEach(key => {
+            purchases[key] = parsedPurchases[key] || 0;
+        });
+    }
+}
+// Информация "Информация" видимость при нажатии
 const info = document.getElementById('infoText');
 const extra = document.getElementById('extraText');
 info.addEventListener('click', () => {
@@ -575,6 +593,7 @@ info.addEventListener('click', () => {
 });
 function init() {
     createItemCards();
+    loadGameState();  // загружаем состояние из localStorage
     updateMoney();
     updatePurchases();
     updateButtons();
