@@ -1,606 +1,1559 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Игра "Тратить и продавать деньги" — Категории товаров</title>
-<style>
-    * { box-sizing: border-box; }
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: #e8f0fe;
-        margin: 0;
-        padding: 0 10px 40px;
-        display: flex;
-        justify-content: center;
-        min-height: 100vh;
-        color: #222;
-    }
-    main {
-        max-width: 800px;
-        width: 100%;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        padding: 20px 30px 40px;
-        margin-top: 80px;
-        position: relative;
-    }
-    h1 {
-        text-align: center;
-        margin-bottom: 5px;
-        color: #1a4d2e;
-        font-weight: 700;
-        font-size: 2rem;
-        user-select: none;
-    }
-    #money {
-        position: fixed;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        background: #2c9a4d;
-        color: white;
-        padding: 15px 30px;
-        font-size: 26px;
-        font-weight: 700;
-        border-radius: 0 0 15px 15px;
-        box-shadow: 0 3px 8px rgba(0,0,0,0.25);
-        z-index: 1000;
-        width: 100%;
-        max-width: 800px;
-        text-align: center;
-        user-select: none;
-    }
-    .container {
-        background: #2c9a4d;
-        padding: 20px 30px;
-        border-radius: 12px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        width: 300px;
-        text-align: center;
-    }
-    #infoText {
-        cursor: pointer;
-        color: white;
-        font-weight: 600;
-        font-size: 1.3em;
-        border-bottom: 2px solid white;
-        transition: color 0.3s, border-bottom-color 0.3s;
-        user-select: none;
-        padding-bottom: 4px;
-    }
-    #infoText:hover {
-        color: white;
-        border-bottom-color: white;
-    }
-    #extraText {
-        margin-top: 15px;
-        padding: 12px 18px;
-        background-color: #e7f3ff;
-        color: #212121;
-        border-radius: 8px;
-        font-size: 1em;
-        line-height: 1.4;
-        box-shadow: inset 0 0 8px #aac7ff;
-        display: none;
-        opacity: 0;
-        transition: opacity 0.3s;
-    }
-    .content { padding-top: 100px; }
-    /* Tabs Styles */
-    .tabs {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 16px;
-        margin-top: 16px;
-    }
-    .tab-btn {
-        background: #dbedda;
-        color: #2a7f62;
-        border: none;
-        border-radius: 10px 10px 0 0;
-        font-size: 1.05rem;
-        font-weight: 700;
-        padding: 12px 30px;
-        cursor: pointer;
-        margin-right: 4px;
-        outline: none;
-        transition: background .28s, color .28s;
-        box-shadow: 0 2px 7px rgba(0,0,0,0.07);
-    }
-    .tab-btn:last-child { margin-right: 0; }
-    .tab-btn.active, .tab-btn:hover {
-        background: #2c9a4d;
-        color: #fff;
-    }
-    .tab-content {
-        display: none;
-        animation: fadein 0.35s;
-    }
-    .tab-content.active { display: block; }
-    @keyframes fadein {
-        from { opacity: 0; transform: translateY(12px);}
-        to { opacity: 1; transform: none;}
-    }
-    .items {
-        display: grid;
-        grid-template-columns: repeat(auto-fit,minmax(230px,1fr));
-        gap: 20px;
-        margin-bottom: 30px;
-    }
-    .item-card {
-        background: #fefefe;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-        padding: 15px 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        transition: transform 0.3s ease;
-        user-select: none;
-    }
-    .item-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-    }
-    .item-image {
-        width: 140px;
-        height: 140px;
-        object-fit: contain;
-        margin-bottom: 12px;
-        filter: drop-shadow(0 0 1px rgba(0,0,0,0.1));
-    }
-    .item-title {
-        font-weight: 700;
-        font-size: 1.12rem;
-        color: #2a7f62;
-        margin-bottom: 6px;
-        text-align: center;
-    }
-    .item-price {
-        font-size: 1rem;
-        color: #555;
-        margin-bottom: 12px;
-    }
-    .item-controls {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        width: 100%;
-        justify-content: center;
-    }
-    input.qty {
-        width: 56px;
-        padding: 6px;
-        font-size: 1rem;
-        border: 1.8px solid #ccc;
-        border-radius: 6px;
-        text-align: center;
-        transition: border-color 0.3s;
-    }
-    input.qty:focus {
-        outline: none;
-        border-color: #2c9a4d;
-        box-shadow: 0 0 6px #2c9a4daa;
-    }
-    button {
-        padding: 8px 14px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        border-radius: 8px;
-        border: none;
-        color: white;
-        transition: background-color 0.3s ease;
-        user-select: none;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    }
-    button.buy { background-color: #2c9a4d; }
-    button.buy:hover:not(:disabled) { background-color: #237a3e; }
-    button.sell { background-color: #d9534f; }
-    button.sell:hover:not(:disabled) { background-color: #b53b3a; }
-    button:disabled {
-        background-color: #bbb;
-        cursor: not-allowed;
-        box-shadow: none;
-    }
-    #message {
-        margin-top: 15px;
-        text-align: center;
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: #d9534f;
-        min-height: 28px;
-        user-select: none;
-    }
-    #purchases {
-        background: #fefefe;
-        padding: 20px 25px;
-        border-radius: 12px;
-        box-shadow: 0 3px 12px rgba(0,0,0,0.1);
-        user-select: none;
-    }
-    #purchases h2 {
-        margin-top: 0;
-        font-size: 1.6rem;
-        color: #2a7f62;
-        text-align: center;
-        margin-bottom: 15px;
-    }
-    #purchase-list {
-        list-style: none;
-        padding-left: 0;
-        font-size: 1.1rem;
-        color: #444;
-        max-height: 180px;
-        overflow-y: auto;
-        margin-bottom: 15px;
-    }
-    #purchase-list li {
-        padding: 6px 0;
-        border-bottom: 1px solid #ddd;
-        display: flex;
-        justify-content: space-between;
-        font-weight: 600;
-    }
-    #purchase-list li:last-child { border-bottom: none; }
-    #total-sum {
-        font-weight: 700;
-        font-size: 1.3rem;
-        color: #2a7f62;
-        text-align: center;
-        margin-bottom: 10px;
-    }
-    #transaction-count {
-        text-align: center;
-        font-size: 1rem;
-        color: #555;
-        margin-bottom: 10px;
-        user-select: none;
-    }
-    @media (max-width: 600px) {
-        main, #money { max-width: 100%!important; }
-        .items { grid-template-columns: 1fr; }
-        .container { width: 100%; }
-        .tab-btn { padding: 10px 7px; font-size: .95rem;}
-    }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ModernBlog | Современный блог</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --border-radius: 12px;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: #fefefe;
+        }
+        
+        h1, h2, h3, h4, h5 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 16px;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        .btn-accent {
+            background-color: var(--accent);
+        }
+        
+        .btn-accent:hover {
+            background-color: #e11575;
+        }
+        
+        /* Header */
+        header {
+            background-color: white;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            color: var(--secondary);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 30px;
+        }
+        
+        nav ul li a {
+            font-weight: 500;
+            position: relative;
+            padding: 5px 0;
+        }
+        
+        nav ul li a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent);
+            bottom: 0;
+            left: 0;
+            transition: var(--transition);
+        }
+        
+        nav ul li a:hover:after {
+            width: 100%;
+        }
+        
+        .active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            text-align: center;
+            border-radius: 0 0 30px 30px;
+            margin-bottom: 60px;
+        }
+        
+        .hero h1 {
+            font-size: 3.2rem;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+        
+        .posts-container {
+            flex: 2;
+            min-width: 300px;
+        }
+        
+        .sidebar {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 3px;
+            background-color: var(--accent);
+            bottom: 0;
+            left: 0;
+        }
+        
+        /* Post Cards */
+        .post-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .post-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .post-image {
+            height: 220px;
+            width: 100%;
+            object-fit: cover;
+        }
+        
+        .post-content {
+            padding: 25px;
+        }
+        
+        .post-meta {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .post-category {
+            background-color: var(--light-gray);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-right: 15px;
+        }
+        
+        .post-date {
+            display: flex;
+            align-items: center;
+        }
+        
+        .post-date i {
+            margin-right: 5px;
+        }
+        
+        .post-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .post-excerpt {
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+        
+        .post-author {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        .author-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 12px;
+        }
+        
+        .author-name {
+            font-weight: 500;
+        }
+        
+        /* Sidebar */
+        .sidebar-widget {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+        
+        .widget-title {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+        
+        .categories-list {
+            list-style: none;
+        }
+        
+        .categories-list li {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .categories-list li:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .categories-list a {
+            display: flex;
+            justify-content: space-between;
+            transition: var(--transition);
+        }
+        
+        .categories-list a:hover {
+            color: var(--primary);
+        }
+        
+        .category-count {
+            background-color: var(--light-gray);
+            padding: 2px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+        
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .tag {
+            background-color: var(--light-gray);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        
+        .tag:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .recent-post {
+            display: flex;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--light-gray);
+            cursor: pointer;
+        }
+        
+        .recent-post:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .recent-post-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 15px;
+        }
+        
+        .recent-post-title {
+            font-weight: 500;
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+        }
+        
+        .recent-post-date {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        /* New Post Form */
+        .new-post-form {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 40px;
+            box-shadow: var(--shadow);
+            margin-bottom: 60px;
+            display: none;
+        }
+        
+        .form-title {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: var(--dark);
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+        
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        .form-textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+        
+        .form-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        /* Avatar Selection */
+        .avatar-selection {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .avatar-option {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: var(--transition);
+        }
+        
+        .avatar-option.selected {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+        
+        .avatar-option:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Page Content */
+        .page-content {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 40px;
+            box-shadow: var(--shadow);
+            margin-bottom: 60px;
+        }
+        
+        .page-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+        
+        .page-description {
+            font-size: 1.1rem;
+            color: var(--gray);
+            margin-bottom: 30px;
+            line-height: 1.7;
+        }
+        
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .contact-item {
+            background-color: var(--light);
+            padding: 25px;
+            border-radius: var(--border-radius);
+        }
+        
+        .contact-item i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .contact-item h3 {
+            margin-bottom: 10px;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 60px 0 30px;
+            margin-top: 60px;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .footer-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .footer-logo i {
+            margin-right: 10px;
+            color: var(--accent);
+        }
+        
+        .footer-description {
+            color: #adb5bd;
+            margin-bottom: 25px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        
+        .social-link:hover {
+            background-color: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .footer-title {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            color: white;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links a {
+            color: #adb5bd;
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #adb5bd;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                padding: 20px 0;
+            }
+            
+            .logo {
+                margin-bottom: 20px;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            nav ul li {
+                margin: 0 10px;
+                margin-bottom: 10px;
+            }
+            
+            .hero {
+                padding: 60px 0;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .new-post-form {
+                padding: 25px;
+            }
+            
+            .avatar-selection {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        /* Utility Classes */
+        .text-center {
+            text-align: center;
+        }
+        
+        .mt-30 {
+            margin-top: 30px;
+        }
+        
+        .mb-30 {
+            margin-bottom: 30px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
-<div id="money">Деньги: 430000000000 $</div>
-<main>		
-    <h1>Денежный Поток</h1>
-    <div class="container">
-        <div id="infoText">Информация</div>
-        <div id="extraText">Добро пожаловать в игру Денежный Поток, где вашей целью является потратить как можно больше денег! На счету у вас начислена сумма экономики Дочерней компании UOR</div>
-    </div>
-    <div class="content">
-        <!-- Табы для категорий -->
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="tab-general">Обычные</button>
-            <button class="tab-btn" data-tab="tab-cars">Машины</button>
-            <button class="tab-btn" data-tab="tab-planes">Самолеты</button>
-            <button class="tab-btn" data-tab="tab-houses">Дома</button>
-            <button class="tab-btn" data-tab="tab-other">Другое</button>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">
+                    <i class="fas fa-pen-nib"></i> ModernBlog
+                </a>
+                <nav>
+                    <ul>
+                        <li><a href="#" class="nav-link active" data-page="home">Главная</a></li>
+                        <li><a href="#" class="nav-link" data-page="blog">Блог</a></li>
+                        <li><a href="#" class="nav-link" data-page="categories">Категории</a></li>
+                        <li><a href="#" class="nav-link" data-page="about">О нас</a></li>
+                        <li><a href="#" class="nav-link" data-page="contacts">Контакты</a></li>
+                        <li><a href="#" id="newPostBtn" class="btn btn-accent">Новый пост</a></li>
+                    </ul>
+                </nav>
+            </div>
         </div>
-        <!-- Контент по табам -->
-        <div class="tab-content active" id="tab-general">
-            <div class="items" aria-label="Список товаров — обычные"></div>
-        </div>
-        <div class="tab-content" id="tab-cars">
-            <div class="items" aria-label="Список товаров — машины"></div>
-        </div>
-        <div class="tab-content" id="tab-planes">
-            <div class="items" aria-label="Список товаров — самолеты"></div>
-        </div>
-        <div class="tab-content" id="tab-houses">
-            <div class="items" aria-label="Список товаров — дома"></div>
-        </div>
-        <div class="tab-content" id="tab-other">
-            <div class="items" aria-label="Список товаров — другое"></div>
-        </div>
-        <div id="message" role="alert" aria-live="polite"></div>
-        <div id="purchases" aria-live="polite" aria-atomic="true" aria-relevant="all">
-            <h2>Ваши покупки</h2>
-            <ul id="purchase-list" aria-label="Список купленных товаров"></ul>
-            <div id="total-sum">Общая сумма покупок: 0 $</div>
-            <div id="transaction-count">Сделано транзакций: 0</div>
-        </div>
-    </div>
-</main>
-<script>
-// ----- Категории товаров -----
-const categories = {
-    'general': [
-        "Наушники","Кроссовки","Розы","Айфон 12 (128GB)","Айфон 13 (128GB)","Айфон 14 (256 GB)","Айфон 15 (512 GB)","Айфон 16 (1 TB)","Холодильник","Кондиционер","PlayStation 5 (1TB)","The Catalina","Orient","Сейф","Ноутбук Apple","Ноутбук Lenovo","Ноутбук Asus","iPad Air 13-inch","Тибетский Мастиф"
-    ],
-    'cars': [
-        "Mercedes E V2112","Auddi RS70","Аурус Сенатор","Ламборгини Миора","Ролс-Ройс Куллиан","Ролс-Ройс Фантом","Сенво ZT1","Макларен В1","Кенигзегг","Ламборгини Венено","Бугатти Деева","Мерседес Майбах Эсколеро","Бугатти Центодиетти","Бугатти Нуар","Ролс-Ройс Bout Tale","Мерседес Аватар","Феррари 250 GDO"
-    ],
-    'planes': [
-        "LEONARDO AW09 ","Bell 525","ATR EVO","DASSAULT FALCON 6X ","Боинг 777-9"
-    ],
-    'houses': [
-        "Хай-Тек #1","Хай-Тек #2","Стоун Вуд","Загородный дом","Особняк","Особняк в Нью-Йорке"
-    ],
-    'other': [
-        "Корона Елизаветы II"
-    ]
-};
-const allProducts = [
-    { name: "Наушники", price: 30, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-acs-1109-tw-0704_1.png" },
-    { name: "Кроссовки", price: 62, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-clh-1119-cs-0010_1_1_.png" },
-    { name: "Розы", price: 74, img: "https://kartinki.pics/pics/uploads/posts/2022-09/1663017246_15-kartinkin-net-p-shikarnii-buket-roz-na-prozrachnom-fone-kr-15.jpg" },
-    { name: "Айфон 12 (128GB)", price: 800, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/6/7/6793065-1602664453.jpg" },
-    { name: "Айфон 13 (128GB)", price: 1290, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-sbp-1105-sm-1511.png" },
-    { name: "Айфон 14 (256 GB)", price: 1600, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/e/1/e12eeae2_2.png" },
-    { name: "Айфон 15 (512 GB)", price: 2800, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-sbp-1105-sm-2467_1.png" },
-    { name: "Айфон 16 (1 TB)", price: 4000, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-sbp-1105-sm-2890_1.png" },
-    { name: "Холодильник", price: 3500, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-mt-bmt-1108-rb-0537_5.png" },
-    { name: "Кондиционер", price: 1200, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-mt-bmt-1198-ac-0106_102000_1.png" },
-    { name: "PlayStation 5 (1TB)", price: 1300, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-gaf-1106-gc-0052_1.png" },
-    { name: "The Catalina", price: 700, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/1/_/1_28.png" },
-    { name: "Orient", price: 500, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-wch-1106-wt-1141_1.png" },
-    { name: "Сейф", price: 5200, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-vrt-1114-sf-0173_1.png" },
-    { name: "Ноутбук Apple", price: 3400, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-kot-1114-nb-2892_1.png" },
-    { name: "Ноутбук Lenovo", price: 1890, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-kot-1114-nb-2661_1.png" },
-    { name: "Ноутбук Asus", price: 2300, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-kot-1114-nb-2944_10000.png" },
-    { name: "iPad Air 13-inch", price: 2900, img: "https://kontakt.az/media/catalog/product/cache/a252e3db3d11365dd1457895056a5f34/t/m/tm-dg-tbq-1105-tb-0720_1.png" },
-    { name: "Тибетский Мастиф", price: 5000, img: "https://kartinki.pics/pics/uploads/posts/2022-09/1663731875_2-kartinkin-net-p-bolshaya-pushistaya-rizhaya-sobaka-pintere-2.jpg" },
-    { name: "Хай-Тек #1", price: 45000, img: "https://www.ccnova.ru/upload/iblock/603/1yttky8xzwn8454eqcnhgislzycwboof/370_2_novatsiya.jpg" },
-    { name: "Хай-Тек #2", price: 350000, img: "https://kartinki.pics/uploads/posts/2022-07/1657688548_4-kartinkin-net-p-kartinki-bolshoi-dom-4.jpg" },
-    { name: "Стоун Вуд", price: 1000000, img: "https://kartinki.pics/uploads/posts/2022-07/1657688587_11-kartinkin-net-p-kartinki-bolshoi-dom-11.jpg" },
-    { name: "Загородный дом", price: 12000000, img: "https://kartinki.pics/uploads/posts/2022-07/1657688541_15-kartinkin-net-p-kartinki-bolshoi-dom-15.jpg" },
-    { name: "Особняк", price: 46000000, img: "https://kartinki.pics/uploads/posts/2022-07/1657688511_1-kartinkin-net-p-kartinki-bolshoi-dom-1.jpg" },
-    { name: "Особняк в Нью-Йорке", price: 55000000, img: "https://kartinki.pics/uploads/posts/2022-07/1657688542_30-kartinkin-net-p-kartinki-bolshoi-dom-30.jpg" },
-    { name: "Mercedes E V2112", price: 50000, img: "https://static.wikia.nocookie.net/businessempire/images/c/c7/Cars_marcedes_e_v2112.png" },
-    { name: "Auddi RS70", price: 56000, img: "https://static.wikia.nocookie.net/businessempire/images/b/b5/Cars_auddi_rr_7.png" },
-    { name: "Аурус Сенатор", price: 383000, img: "https://static.wikia.nocookie.net/businessempire/images/8/8b/Cars_auros_senator.png" },
-    { name: "Ламборгини Миора", price: 480000, img: "https://static.wikia.nocookie.net/businessempire/images/3/39/Cars_lambarginy_myora.png" },
-    { name: "Ролс-Ройс Куллиан", price: 550000, img: "https://static.wikia.nocookie.net/businessempire/images/6/61/Cars_rols_roice_kullynan.png" },
-    { name: "Ролс-Ройс Фантом", price: 626600, img: "https://static.wikia.nocookie.net/businessempire/images/4/46/Cars_rols_roice_fantome.png" },
-    { name: "Сенво ZT1", price: 1000000, img: "https://static.wikia.nocookie.net/businessempire/images/2/23/Cars_senwo_zt1.png" },
-    { name: "Макларен В1", price: 1320000, img: "https://static.wikia.nocookie.net/businessempire/images/3/35/Cars_macleran_b1.png" },
-    { name: "Кенигзегг", price: 2100000, img: "https://static.wikia.nocookie.net/businessempire/images/8/82/Cars_konigzegg_own.png" },
-    { name: "Ламборгини Венено", price: 3800000, img: "https://static.wikia.nocookie.net/businessempire/images/5/58/Cars_lambarginy_weneno_roadster.png" },
-    { name: "Бугатти Деева", price: 5470000, img: "https://static.wikia.nocookie.net/businessempire/images/a/a3/Cars_buggaty_deeva.png" },
-    { name: "Мерседес Майбах Эсколеро", price: 8000000, img: "https://static.wikia.nocookie.net/businessempire/images/5/55/Cars_marcedes_maybech_exolero.png" },
-    { name: "Бугатти Центодиетти", price: 9000000, img: "https://static.wikia.nocookie.net/businessempire/images/5/5e/Cars_buggaty_centodiechi.png" },
-    { name: "Бугатти Нуар", price: 19000000, img: "https://static.wikia.nocookie.net/businessempire/images/9/92/Cars_buggaty_le_voyture_noare.png" },
-    { name: "Ролс-Ройс Bout Tale", price: 28000000, img: "https://static.wikia.nocookie.net/businessempire/images/f/fc/Cars_rols_roice_bout_tale.png" },
-    { name: "Мерседес Аватар", price: 35000000, img: "https://static.wikia.nocookie.net/businessempire/images/c/c1/Cars_marcedes_vizio_awtr.png" },
-    { name: "Феррари 250 GDO", price: 50000000, img: "https://static.wikia.nocookie.net/businessempire/images/9/9e/Cars_ferarry_250_gdo.png" },
-    { name: "LEONARDO AW09 ", price: 3500000, img: "https://topflight.ru/upload/medialibrary/e37/AW09_Security-services_robust-and-versatile_960400.jpg" },
-    { name: "Bell 525", price: 15000000, img: "https://topflight.ru/upload/medialibrary/360/bell-525-at-sunset-landed-hero.jpg" },
-    { name: "ATR EVO", price: 21600000, img: "https://cdn.airlines-inform.ru/upload/iblock/c5a/ATR-EVO.jpg" },
-    { name: "DASSAULT FALCON 6X ", price: 47000000, img: "https://topflight.ru/upload/medialibrary/603/18_Falcon6X_USB53_Kopie.jpg" },
-    { name: "Боинг 777-9", price: 442200000, img: "https://cdn.airlines-inform.ru/upload/iblock/a28/Boeing-777-9X.jpg" },
-    { name: "Корона Елизаветы II", price: 1000000000, img: "https://upload.wikimedia.org/wikipedia/commons/1/19/Imperial_State_Crown.png" }
-];
-// --- Разделение products по категориям для вывода в нужный таб ---
-const productsByCategory = {};
-Object.keys(categories).forEach(cat => {
-    productsByCategory[cat] = allProducts.filter(p => categories[cat].includes(p.name));
-});
-let money = 4130000000000;
-let transactionCount = 0;
-// Все покупки
-const purchases = {};
-allProducts.forEach(p => purchases[p.name] = 0);
-// Элементы DOM
-const moneyDisplay = document.getElementById('money');
-const message = document.getElementById('message');
-const purchaseList = document.getElementById('purchase-list');
-const totalSumDisplay = document.getElementById('total-sum');
-const transactionCountDisplay = document.getElementById('transaction-count');
-// Функции вкладок
-function switchTab(tabId) {
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-    document.querySelector(`[data-tab=${tabId}]`).classList.add('active');
-    document.getElementById(tabId).classList.add('active');
-}
-document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
-});
-function updateMoney() {
-    moneyDisplay.textContent = `Деньги: ${money.toLocaleString()} $`;
-}
-function updatePurchases() {
-    purchaseList.innerHTML = '';
-    let total = 0;
-    for (const item in purchases) {
-        const count = purchases[item];
-        if (count > 0) {
-            const li = document.createElement('li');
-            li.textContent = `${item}`;
-            const span = document.createElement('span');
-            span.textContent = `${count} шт.`;
-            li.appendChild(span);
-            purchaseList.appendChild(li);
-            total += count * allProducts.find(p => p.name === item).price;
-        }
-    }
-    if (purchaseList.children.length === 0) {
-        const li = document.createElement('li');
-        li.textContent = "Пока нет покупок";
-        li.style.fontStyle = 'italic';
-        li.style.color = '#888';
-        purchaseList.appendChild(li);
-    }
-    totalSumDisplay.textContent = `Общая сумма покупок: ${total.toLocaleString()} $`;
-}
-function getControls(category, name) {
-    const cardsWrap = document.querySelector(`#tab-${category} .items`);
-    const card = [...cardsWrap.children].find(card =>
-        card.querySelector('button.buy').getAttribute('data-name') === name
-    );
-    if (!card) return null;
-    return {
-        buyBtn: card.querySelector('button.buy'),
-        sellBtn: card.querySelector('button.sell'),
-        qtyInput: card.querySelector('input.qty'),
-    };
-}
-function updateButtons() {
-    Object.keys(categories).forEach(cat => {
-        productsByCategory[cat].forEach(product => {
-            const controls = getControls(cat, product.name);
-            if (!controls) return;
-            let qty = parseInt(controls.qtyInput.value);
-            if (isNaN(qty) || qty < 1) {
-                qty = 1;
-                controls.qtyInput.value = qty;
-            }
-            if (controls.sellBtn)
-                controls.sellBtn.disabled = purchases[product.name] < qty;
-            if (controls.buyBtn) controls.buyBtn.disabled = false;
-        });
-    });
-}
-function checkGameOver() {
-    if (money === 0)
-        message.textContent = 'Поздравляем! Вы потратили все деньги!';
-    else message.textContent = '';
-}
-function handleBuy(category, name) {
-    const controls = getControls(category, name);
-    if (!controls) return;
-    let qty = parseInt(controls.qtyInput.value);
-    if (isNaN(qty) || qty < 1) qty = 1;
-    const price = allProducts.find(p => p.name === name).price;
-    let totalCost = price * qty;
-    if (totalCost > money) {
-        qty = Math.floor(money / price);
-        if (qty === 0) {
-            message.textContent = 'Недостаточно денег для покупки.';
-            return;
-        }
-        totalCost = price * qty;
-        controls.qtyInput.value = qty;
-    }
-    money -= totalCost;
-    purchases[name] += qty;
-    transactionCount++;
-    updateMoney();
-    updatePurchases();
-    updateButtons();
-    checkGameOver();
-    saveGameState(); // сохраняем в localStorage после покупки
-    message.textContent = `Вы купили ${qty} ${name}${qty > 1 ? 'ов' : ''} за ${totalCost.toLocaleString()} $.`;
-    transactionCountDisplay.textContent = `Сделано транзакций: ${transactionCount}`;
-}
-function handleSell(category, name) {
-    const controls = getControls(category, name);
-    if (!controls) return;
-    let qty = parseInt(controls.qtyInput.value);
-    if (isNaN(qty) || qty < 1) qty = 1;
-    if (purchases[name] < qty) {
-        qty = purchases[name];
-        if (qty === 0) {
-            message.textContent = `У вас нет ${name} для продажи.`;
-            return;
-        }
-        controls.qtyInput.value = qty;
-    }
-    const price = allProducts.find(p => p.name === name).price;
-    const totalGain = price * qty;
-    purchases[name] -= qty;
-    money += totalGain;
-    transactionCount++;
-    updateMoney();
-    updatePurchases();
-    updateButtons();
-    checkGameOver();
-    saveGameState(); // сохраняем в localStorage после продажи
-    message.textContent = `Вы продали ${qty} ${name}${qty > 1 ? 'ов' : ''} и получили ${totalGain.toLocaleString()} $.`;
-    transactionCountDisplay.textContent = `Сделано транзакций: ${transactionCount}`;
-}
-function createItemCards() {
-    Object.entries(productsByCategory).forEach(([category, products]) => {
-        const itemsContainer = document.querySelector(`#tab-${category} .items`);
-        products.forEach(product => {
-            const card = document.createElement('div');
-            card.className = 'item-card';
-            card.setAttribute('role', 'group');
-            card.setAttribute('aria-label', `${product.name}, цена ${product.price} долларов`);
-            card.innerHTML = `
-                <img src="${product.img}" alt="${product.name}" class="item-image" />
-                <div class="item-title">${product.name}</div>
-                <div class="item-price">${product.price.toLocaleString()} $</div>
-                <div class="item-controls">
-                    <button class="sell" data-name="${product.name}" aria-label="Продать ${product.name}" disabled>Продать</button>
-                    <input type="number" min="1" value="1" class="qty" data-name="${product.name}" aria-label="Количество ${product.name}" />
-                    <button class="buy" data-name="${product.name}" aria-label="Купить ${product.name}">Купить</button>
+    </header>
+
+    <!-- Main Content Area -->
+    <div id="content-area">
+        <!-- Hero Section (Home Page) -->
+        <section class="hero" id="home-page">
+            <div class="container">
+                <h1>Добро пожаловать в ModernBlog</h1>
+                <p>Платформа для публикации ваших мыслей, идей и историй. Делитесь своим опытом с миром и вдохновляйте других.</p>
+                <a href="#" id="createPostBtn" class="btn">Создать пост</a>
+            </div>
+        </section>
+
+        <!-- Main Content (Home Page) -->
+        <div class="container" id="home-content">
+            <div class="main-content">
+                <!-- Posts Container -->
+                <div class="posts-container">
+                    <h2 class="section-title">Последние публикации</h2>
+                    <div id="postsList">
+                        <!-- Posts will be loaded here -->
+                    </div>
                 </div>
-            `;
-            itemsContainer.appendChild(card);
-        });
-    });
-}
-function addEventHandlers() {
-    Object.keys(productsByCategory).forEach(cat => {
-        productsByCategory[cat].forEach(product => {
-            const controls = getControls(cat, product.name);
-            if (!controls) return;
-            controls.qtyInput.addEventListener('input', () => {
-                let val = parseInt(controls.qtyInput.value);
-                if (isNaN(val) || val < 1) {
-                    controls.qtyInput.value = 1;
-                    val = 1;
-                }
-                if (controls.sellBtn && val > purchases[product.name])
-                    controls.qtyInput.value = purchases[product.name];
-                updateButtons();
+
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <!-- About Widget -->
+                    <div class="sidebar-widget">
+                        <h3 class="widget-title">О блоге</h3>
+                        <p>ModernBlog - это современная платформа для публикации статей, мыслей и идей. Присоединяйтесь к нашему сообществу!</p>
+                    </div>
+
+                    <!-- Categories Widget -->
+                    <div class="sidebar-widget">
+                        <h3 class="widget-title">Категории</h3>
+                        <ul class="categories-list" id="categoriesList">
+                            <!-- Categories will be loaded here -->
+                        </ul>
+                    </div>
+
+                    <!-- Recent Posts Widget -->
+                    <div class="sidebar-widget">
+                        <h3 class="widget-title">Недавние посты</h3>
+                        <div id="recentPosts">
+                            <!-- Recent posts will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Tags Widget -->
+                    <div class="sidebar-widget">
+                        <h3 class="widget-title">Популярные теги</h3>
+                        <div class="tags">
+                            <a href="#" class="tag" data-tag="Технологии">Технологии</a>
+                            <a href="#" class="tag" data-tag="Путешествия">Путешествия</a>
+                            <a href="#" class="tag" data-tag="Дизайн">Дизайн</a>
+                            <a href="#" class="tag" data-tag="Еда">Еда</a>
+                            <a href="#" class="tag" data-tag="Здоровье">Здоровье</a>
+                            <a href="#" class="tag" data-tag="Карьера">Карьера</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blog Page -->
+        <div class="container hidden" id="blog-page">
+            <div class="page-content">
+                <h1 class="page-title">Все публикации</h1>
+                <p class="page-description">Здесь вы найдете все статьи, опубликованные в нашем блоге. Используйте фильтры по категориям и тегам для поиска интересующих вас материалов.</p>
+                <div id="allPostsList">
+                    <!-- All posts will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Categories Page -->
+        <div class="container hidden" id="categories-page">
+            <div class="page-content">
+                <h1 class="page-title">Категории</h1>
+                <p class="page-description">Исследуйте статьи по интересующим вас темам. Каждая категория содержит подборку материалов на определенную тему.</p>
+                <div class="categories-list-full" id="categoriesListFull">
+                    <!-- Full categories list will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- About Page -->
+        <div class="container hidden" id="about-page">
+            <div class="page-content">
+                <h1 class="page-title">О нас</h1>
+                <p class="page-description">ModernBlog - это современная платформа для публикации и обмена мыслями, идеями и опытом. Мы создали это пространство для того, чтобы каждый мог поделиться своей историей с миром.</p>
+                
+                <div class="page-description">
+                    <h3>Наша миссия</h3>
+                    <p>Мы стремимся создать сообщество, где люди могут свободно выражать свои мысли, делиться знаниями и вдохновлять друг друга. Мы верим, что каждый человек имеет уникальный опыт, который может быть полезен другим.</p>
+                    
+                    <h3>Наша команда</h3>
+                    <p>Наша команда состоит из энтузиастов, которые любят писать, читать и делиться знаниями. Мы работаем над тем, чтобы сделать платформу удобной и доступной для всех пользователей.</p>
+                    
+                    <h3>Присоединяйтесь к нам</h3>
+                    <p>Если у вас есть идеи, истории или знания, которыми вы хотите поделиться - присоединяйтесь к нашему сообществу! Создавайте посты, комментируйте, обсуждайте и вдохновляйте других.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contacts Page -->
+        <div class="container hidden" id="contacts-page">
+            <div class="page-content">
+                <h1 class="page-title">Контакты</h1>
+                <p class="page-description">Свяжитесь с нами, если у вас есть вопросы, предложения или вы хотите сотрудничать с нами. Мы всегда рады обратной связи от наших пользователей.</p>
+                
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h3>Адрес</h3>
+                        <p>Москва, ул. Примерная, д. 123</p>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <h3>Email</h3>
+                        <p>info@modernblog.ru<br>support@modernblog.ru</p>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <h3>Телефон</h3>
+                        <p>+7 (999) 123-45-67<br>+7 (495) 765-43-21</p>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-clock"></i>
+                        <h3>Время работы</h3>
+                        <p>Пн-Пт: 9:00-18:00<br>Сб-Вс: выходной</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Post Form -->
+        <div class="container">
+            <div class="new-post-form" id="newPostForm">
+                <h2 class="form-title">Создать новый пост</h2>
+                <form id="postForm">
+                    <div class="form-group">
+                        <label for="postTitle" class="form-label">Заголовок поста</label>
+                        <input type="text" id="postTitle" class="form-input" placeholder="Введите заголовок" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="postCategory" class="form-label">Категория</label>
+                        <select id="postCategory" class="form-select" required>
+                            <option value="">Выберите категорию</option>
+                            <option value="Технологии">Технологии</option>
+                            <option value="Путешествия">Путешествия</option>
+                            <option value="Дизайн">Дизайн</option>
+                            <option value="Еда">Еда</option>
+                            <option value="Здоровье">Здоровье</option>
+                            <option value="Карьера">Карьера</option>
+                            <option value="Другое">Другое</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="postImage" class="form-label">Ссылка на изображение (URL)</label>
+                        <input type="text" id="postImage" class="form-input" placeholder="https://example.com/image.jpg" value="">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="postContent" class="form-label">Содержимое поста</label>
+                        <textarea id="postContent" class="form-textarea" placeholder="Начните писать ваш пост здесь..." rows="8" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="postAuthor" class="form-label">Имя автора</label>
+                        <input type="text" id="postAuthor" class="form-input" placeholder="Ваше имя" value="" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Выберите аватарку</label>
+                        <div class="avatar-selection" id="avatarSelection">
+                            <!-- Avatars will be loaded here -->
+                        </div>
+                        <input type="hidden" id="selectedAvatar" value="">
+                    </div>
+                    
+                    <div class="form-buttons">
+                        <button type="submit" class="btn">Опубликовать</button>
+                        <button type="button" id="cancelPostBtn" class="btn" style="background-color: var(--light-gray); color: var(--dark);">Отмена</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <div class="footer-logo">
+                        <i class="fas fa-pen-nib"></i> ModernBlog
+                    </div>
+                    <p class="footer-description">Современная платформа для публикации ваших мыслей, идей и историй. Присоединяйтесь к нашему сообществу!</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-vk"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-telegram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3 class="footer-title">Быстрые ссылки</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" class="nav-link" data-page="home">Главная</a></li>
+                        <li><a href="#" class="nav-link" data-page="about">О нас</a></li>
+                        <li><a href="#" class="nav-link" data-page="blog">Блог</a></li>
+                        <li><a href="#" class="nav-link" data-page="categories">Категории</a></li>
+                        <li><a href="#" class="nav-link" data-page="contacts">Контакты</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3 class="footer-title">Категории</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" data-category="Технологии">Технологии</a></li>
+                        <li><a href="#" data-category="Путешествия">Путешествия</a></li>
+                        <li><a href="#" data-category="Дизайн">Дизайн</a></li>
+                        <li><a href="#" data-category="Еда">Еда</a></li>
+                        <li><a href="#" data-category="Здоровье">Здоровье</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3 class="footer-title">Контакты</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-map-marker-alt"></i> Москва, Россия</li>
+                        <li><i class="fas fa-envelope"></i> info@modernblog.ru</li>
+                        <li><i class="fas fa-phone"></i> +7 (999) 123-45-67</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2023 ModernBlog. Все права защищены.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Инициализация блога
+        document.addEventListener('DOMContentLoaded', function() {
+            // Загружаем данные из localStorage или инициализируем начальные данные
+            let blogPosts = JSON.parse(localStorage.getItem('blogPosts')) || [];
+            
+            // Загружаем аватары пользователя из localStorage
+            let userAvatars = JSON.parse(localStorage.getItem('userAvatars')) || [];
+            
+            // Предустановленные аватарки
+            const defaultAvatars = [
+                'https://randomuser.me/api/portraits/men/1.jpg',
+                'https://randomuser.me/api/portraits/women/1.jpg',
+                'https://randomuser.me/api/portraits/men/2.jpg',
+                'https://randomuser.me/api/portraits/women/2.jpg',
+                'https://randomuser.me/api/portraits/men/3.jpg',
+                'https://randomuser.me/api/portraits/women/3.jpg',
+                'https://randomuser.me/api/portraits/men/4.jpg',
+                'https://randomuser.me/api/portraits/women/4.jpg',
+                'https://randomuser.me/api/portraits/men/5.jpg',
+                'https://randomuser.me/api/portraits/women/5.jpg'
+            ];
+            
+            // Если нет аватаров пользователя, используем предустановленные
+            if (userAvatars.length === 0) {
+                userAvatars = defaultAvatars;
+                localStorage.setItem('userAvatars', JSON.stringify(userAvatars));
+            }
+            
+            // Загружаем аватары в форму
+            loadAvatars(userAvatars);
+            
+            // Если нет постов, создаем начальные данные
+            if (blogPosts.length === 0) {
+                blogPosts = [
+                    {
+                        id: 1,
+                        title: "Путешествие в Японию: впечатления и советы",
+                        excerpt: "Как организовать поездку в Японию и получить максимум впечатлений от этой удивительной страны.",
+                        content: "Япония - страна контрастов, где древние традиции гармонично сочетаются с современными технологиями. В этой статье я расскажу о своем опыте путешествия по Токио, Киото и Осаки, поделюсь советами по экономии и дам рекомендации по must-visit местам.",
+                        category: "Путешествия",
+                        date: "2023-10-15",
+                        author: "Мария Иванова",
+                        authorAvatar: "https://randomuser.me/api/portraits/women/32.jpg",
+                        image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
+                    },
+                    {
+                        id: 2,
+                        title: "Тренды веб-дизайна 2023 года",
+                        excerpt: "Обзор самых актуальных тенденций в дизайне веб-сайтов в текущем году.",
+                        content: "2023 год принес новые тренды в веб-дизайн: от стекломорфизма до ассиметричных layout'ов. В этой статье мы разберем ключевые тенденции и покажем примеры их успешного применения.",
+                        category: "Дизайн",
+                        date: "2023-10-10",
+                        author: "Александр Смирнов",
+                        authorAvatar: "https://randomuser.me/api/portraits/men/54.jpg",
+                        image: "https://images.unsplash.com/photo-1555099962-4199c345e5dd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
+                    },
+                    {
+                        id: 3,
+                        title: "Здоровое питание: мифы и реальность",
+                        excerpt: "Разбираем популярные заблуждения о правильном питании и здоровом образе жизни.",
+                        content: "Современный рынок переполнен мифами о здоровом питании. В этой статье мы развенчаем самые распространенные из них и дадим научно обоснованные рекомендации по питанию.",
+                        category: "Здоровье",
+                        date: "2023-10-05",
+                        author: "Ольга Кузнецова",
+                        authorAvatar: "https://randomuser.me/api/portraits/women/65.jpg",
+                        image: "https://images.unsplash.com/photo-1490818387583-1baba5e638af?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80"
+                    }
+                ];
+                savePostsToStorage(blogPosts);
+            }
+            
+            // Загружаем начальную страницу (Главная)
+            showPage('home');
+            loadHomePage(blogPosts);
+            
+            // Обработчики навигации
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const page = this.getAttribute('data-page');
+                    showPage(page);
+                    
+                    // Обновляем активную ссылку
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Загружаем контент для страницы
+                    if (page === 'home') {
+                        loadHomePage(blogPosts);
+                    } else if (page === 'blog') {
+                        loadBlogPage(blogPosts);
+                    } else if (page === 'categories') {
+                        loadCategoriesPage(blogPosts);
+                    }
+                });
             });
-            controls.buyBtn.addEventListener('click', () => handleBuy(cat, product.name));
-            controls.sellBtn.addEventListener('click', () => handleSell(cat, product.name));
+            
+            // Обработчики для тегов
+            document.querySelectorAll('.tag').forEach(tag => {
+                tag.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const tagName = this.getAttribute('data-tag');
+                    showPage('blog');
+                    loadBlogPage(blogPosts, tagName);
+                    
+                    // Обновляем навигацию
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    document.querySelector('.nav-link[data-page="blog"]').classList.add('active');
+                });
+            });
+            
+            // Обработчики для категорий в футере
+            document.querySelectorAll('[data-category]').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const category = this.getAttribute('data-category');
+                    showPage('blog');
+                    loadBlogPage(blogPosts, null, category);
+                    
+                    // Обновляем навигацию
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    document.querySelector('.nav-link[data-page="blog"]').classList.add('active');
+                });
+            });
+            
+            // Показать/скрыть форму создания поста
+            const newPostBtn = document.getElementById('newPostBtn');
+            const createPostBtn = document.getElementById('createPostBtn');
+            const newPostForm = document.getElementById('newPostForm');
+            const cancelPostBtn = document.getElementById('cancelPostBtn');
+            const postForm = document.getElementById('postForm');
+            
+            function showPostForm() {
+                newPostForm.style.display = 'block';
+                window.scrollTo({
+                    top: newPostForm.offsetTop - 100,
+                    behavior: 'smooth'
+                });
+            }
+            
+            function hidePostForm() {
+                newPostForm.style.display = 'none';
+                postForm.reset();
+                
+                // Сбрасываем выбор аватарки
+                document.querySelectorAll('.avatar-option').forEach(avatar => {
+                    avatar.classList.remove('selected');
+                });
+                document.getElementById('selectedAvatar').value = '';
+            }
+            
+            newPostBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showPostForm();
+            });
+            
+            createPostBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showPostForm();
+            });
+            
+            cancelPostBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                hidePostForm();
+            });
+            
+            // Обработка выбора аватарки
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('avatar-option')) {
+                    // Снимаем выделение со всех аватарок
+                    document.querySelectorAll('.avatar-option').forEach(avatar => {
+                        avatar.classList.remove('selected');
+                    });
+                    
+                    // Выделяем выбранную аватарку
+                    e.target.classList.add('selected');
+                    document.getElementById('selectedAvatar').value = e.target.getAttribute('data-avatar-url');
+                }
+            });
+            
+            // Обработка отправки формы
+            postForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const title = document.getElementById('postTitle').value;
+                const category = document.getElementById('postCategory').value;
+                const image = document.getElementById('postImage').value;
+                const content = document.getElementById('postContent').value;
+                const author = document.getElementById('postAuthor').value;
+                const avatarUrl = document.getElementById('selectedAvatar').value;
+                
+                // Если аватарка не выбрана, выбираем случайную из доступных
+                let authorAvatar = avatarUrl;
+                if (!authorAvatar && userAvatars.length > 0) {
+                    authorAvatar = userAvatars[Math.floor(Math.random() * userAvatars.length)];
+                } else if (!authorAvatar) {
+                    authorAvatar = `https://randomuser.me/api/portraits/${Math.random() > 0.5 ? 'men' : 'women'}/${Math.floor(Math.random() * 70) + 1}.jpg`;
+                }
+                
+                // Создаем объект поста
+                const newPost = {
+                    id: Date.now(), // уникальный ID на основе времени
+                    title: title,
+                    excerpt: content.substring(0, 150) + '...',
+                    content: content,
+                    category: category,
+                    date: new Date().toISOString().split('T')[0], // текущая дата в формате YYYY-MM-DD
+                    author: author,
+                    authorAvatar: authorAvatar,
+                    image: image || 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80'
+                };
+                
+                // Добавляем пост в начало массива
+                blogPosts.unshift(newPost);
+                
+                // Сохраняем в localStorage
+                savePostsToStorage(blogPosts);
+                
+                // Обновляем отображение
+                loadHomePage(blogPosts);
+                
+                // Скрываем форму и показываем уведомление
+                hidePostForm();
+                alert('Пост успешно опубликован!');
+                
+                // Показываем страницу блога с новым постом
+                showPage('blog');
+                loadBlogPage(blogPosts);
+                
+                // Обновляем навигацию
+                navLinks.forEach(l => l.classList.remove('active'));
+                document.querySelector('.nav-link[data-page="blog"]').classList.add('active');
+            });
         });
-    });
-}
-// Сохранение состояния игры в localStorage
-function saveGameState() {
-    localStorage.setItem('money', money.toString());
-    localStorage.setItem('transactionCount', transactionCount.toString());
-    localStorage.setItem('purchases', JSON.stringify(purchases));
-}
-// Загрузка состояния игры из localStorage
-function loadGameState() {
-    const savedMoney = localStorage.getItem('money');
-    const savedTransactionCount = localStorage.getItem('transactionCount');
-    const savedPurchases = localStorage.getItem('purchases');
-    if (savedMoney !== null) money = Number(savedMoney);
-    if (savedTransactionCount !== null) transactionCount = Number(savedTransactionCount);
-    if (savedPurchases !== null) {
-        const parsedPurchases = JSON.parse(savedPurchases);
-        Object.keys(purchases).forEach(key => {
-            purchases[key] = parsedPurchases[key] || 0;
-        });
-    }
-}
-// Информация "Информация" видимость при нажатии
-const info = document.getElementById('infoText');
-const extra = document.getElementById('extraText');
-info.addEventListener('click', () => {
-    if (extra.style.display === 'none' || extra.style.display === '') {
-        extra.style.display = 'block';
-        setTimeout(() => { extra.style.opacity = 1; }, 10);
-    } else {
-        extra.style.opacity = 0;
-        setTimeout(() => { extra.style.display = 'none'; }, 300);
-    }
-});
-function init() {
-    createItemCards();
-    loadGameState();  // загружаем состояние из localStorage
-    updateMoney();
-    updatePurchases();
-    updateButtons();
-    addEventHandlers();
-    transactionCountDisplay.textContent = `Сделано транзакций: ${transactionCount}`;
-}
-init();
-</script>
+        
+        // Функция для сохранения постов в localStorage
+        function savePostsToStorage(posts) {
+            localStorage.setItem('blogPosts', JSON.stringify(posts));
+        }
+        
+        // Функция для отображения страницы
+        function showPage(pageId) {
+            // Скрываем все страницы
+            document.getElementById('home-page').classList.add('hidden');
+            document.getElementById('home-content').classList.add('hidden');
+            document.getElementById('blog-page').classList.add('hidden');
+            document.getElementById('categories-page').classList.add('hidden');
+            document.getElementById('about-page').classList.add('hidden');
+            document.getElementById('contacts-page').classList.add('hidden');
+            
+            // Показываем выбранную страницу
+            if (pageId === 'home') {
+                document.getElementById('home-page').classList.remove('hidden');
+                document.getElementById('home-content').classList.remove('hidden');
+            } else {
+                document.getElementById(`${pageId}-page`).classList.remove('hidden');
+            }
+            
+            // Скрываем форму создания поста
+            document.getElementById('newPostForm').style.display = 'none';
+        }
+        
+        // Функция для загрузки главной страницы
+        function loadHomePage(posts) {
+            loadPosts(posts.slice(0, 5)); // Показываем только 5 последних постов на главной
+            loadCategories(posts);
+            loadRecentPosts(posts.slice(0, 3));
+        }
+        
+        // Функция для загрузки страницы блога
+        function loadBlogPage(posts, filterTag = null, filterCategory = null) {
+            const allPostsList = document.getElementById('allPostsList');
+            allPostsList.innerHTML = '';
+            
+            // Фильтрация постов
+            let filteredPosts = posts;
+            if (filterTag) {
+                filteredPosts = posts.filter(post => 
+                    post.title.toLowerCase().includes(filterTag.toLowerCase()) || 
+                    post.content.toLowerCase().includes(filterTag.toLowerCase())
+                );
+            }
+            if (filterCategory) {
+                filteredPosts = posts.filter(post => post.category === filterCategory);
+            }
+            
+            if (filteredPosts.length === 0) {
+                let message = 'Пока нет постов.';
+                if (filterTag) {
+                    message = `Посты с тегом "${filterTag}" не найдены.`;
+                } else if (filterCategory) {
+                    message = `Посты в категории "${filterCategory}" не найдены.`;
+                }
+                allPostsList.innerHTML = `<p class="text-center">${message} Будьте первым, кто добавит публикацию!</p>`;
+                return;
+            }
+            
+            // Заголовок с информацией о фильтрах
+            let pageTitle = document.querySelector('#blog-page .page-title');
+            let pageDescription = document.querySelector('#blog-page .page-description');
+            
+            if (filterTag) {
+                pageTitle.textContent = `Публикации с тегом: "${filterTag}"`;
+                pageDescription.textContent = `Все статьи, связанные с темой "${filterTag}".`;
+            } else if (filterCategory) {
+                pageTitle.textContent = `Публикации в категории: "${filterCategory}"`;
+                pageDescription.textContent = `Все статьи в категории "${filterCategory}".`;
+            } else {
+                pageTitle.textContent = 'Все публикации';
+                pageDescription.textContent = 'Здесь вы найдете все статьи, опубликованные в нашем блоге. Используйте фильтры по категориям и тегам для поиска интересующих вас материалов.';
+            }
+            
+            // Отображаем все посты
+            filteredPosts.forEach(post => {
+                const postElement = document.createElement('article');
+                postElement.className = 'post-card';
+                postElement.innerHTML = `
+                    <img src="${post.image}" alt="${post.title}" class="post-image">
+                    <div class="post-content">
+                        <div class="post-meta">
+                            <span class="post-category">${post.category}</span>
+                            <span class="post-date"><i class="far fa-calendar"></i> ${formatDate(post.date)}</span>
+                        </div>
+                        <h3 class="post-title">${post.title}</h3>
+                        <p class="post-excerpt">${post.excerpt}</p>
+                        <div class="post-author">
+                            <img src="${post.authorAvatar}" alt="${post.author}" class="author-avatar">
+                            <div>
+                                <div class="author-name">${post.author}</div>
+                                <div class="post-date">${formatDate(post.date)}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Добавляем обработчик клика для просмотра полного поста
+                postElement.addEventListener('click', function() {
+                    viewPost(post.id);
+                });
+                
+                allPostsList.appendChild(postElement);
+            });
+        }
+        
+        // Функция для загрузки страницы категорий
+        function loadCategoriesPage(posts) {
+            const categoriesListFull = document.getElementById('categoriesListFull');
+            categoriesListFull.innerHTML = '';
+            
+            // Считаем количество постов по категориям
+            const categoryCount = {};
+            posts.forEach(post => {
+                if (categoryCount[post.category]) {
+                    categoryCount[post.category]++;
+                } else {
+                    categoryCount[post.category] = 1;
+                }
+            });
+            
+            // Создаем элементы категорий
+            for (const category in categoryCount) {
+                const categoryElement = document.createElement('div');
+                categoryElement.className = 'sidebar-widget';
+                categoryElement.innerHTML = `
+                    <h3 class="widget-title">${category} <span class="category-count">${categoryCount[category]} постов</span></h3>
+                    <div class="category-posts-preview">
+                        <!-- Здесь можно добавить превью постов этой категории -->
+                    </div>
+                    <a href="#" class="btn view-category-btn" style="margin-top: 15px;" data-category="${category}">Посмотреть все посты</a>
+                `;
+                
+                categoriesListFull.appendChild(categoryElement);
+            }
+            
+            // Обработчики для кнопок просмотра категорий
+            document.querySelectorAll('.view-category-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const category = this.getAttribute('data-category');
+                    showPage('blog');
+                    loadBlogPage(posts, null, category);
+                    
+                    // Обновляем навигацию
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    document.querySelector('.nav-link[data-page="blog"]').classList.add('active');
+                });
+            });
+        }
+        
+        // Функция для загрузки постов на главную страницу
+        function loadPosts(posts) {
+            const postsList = document.getElementById('postsList');
+            postsList.innerHTML = '';
+            
+            if (posts.length === 0) {
+                postsList.innerHTML = '<p class="text-center">Пока нет постов. Будьте первым, кто добавит публикацию!</p>';
+                return;
+            }
+            
+            posts.forEach(post => {
+                const postElement = document.createElement('article');
+                postElement.className = 'post-card';
+                postElement.innerHTML = `
+                    <img src="${post.image}" alt="${post.title}" class="post-image">
+                    <div class="post-content">
+                        <div class="post-meta">
+                            <span class="post-category">${post.category}</span>
+                            <span class="post-date"><i class="far fa-calendar"></i> ${formatDate(post.date)}</span>
+                        </div>
+                        <h3 class="post-title">${post.title}</h3>
+                        <p class="post-excerpt">${post.excerpt}</p>
+                        <div class="post-author">
+                            <img src="${post.authorAvatar}" alt="${post.author}" class="author-avatar">
+                            <div>
+                                <div class="author-name">${post.author}</div>
+                                <div class="post-date">${formatDate(post.date)}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Добавляем обработчик клика для просмотра полного поста
+                postElement.addEventListener('click', function() {
+                    viewPost(post.id);
+                });
+                
+                postsList.appendChild(postElement);
+            });
+        }
+        
+        // Функция для загрузки категорий в сайдбар
+        function loadCategories(posts) {
+            const categoriesList = document.getElementById('categoriesList');
+            categoriesList.innerHTML = '';
+            
+            // Считаем количество постов по категориям
+            const categoryCount = {};
+            posts.forEach(post => {
+                if (categoryCount[post.category]) {
+                    categoryCount[post.category]++;
+                } else {
+                    categoryCount[post.category] = 1;
+                }
+            });
+            
+            // Создаем элементы списка категорий
+            for (const category in categoryCount) {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <a href="#" class="category-link" data-category="${category}">
+                        ${category}
+                        <span class="category-count">${categoryCount[category]}</span>
+                    </a>
+                `;
+                categoriesList.appendChild(li);
+            }
+            
+            // Обработчики для ссылок категорий
+            document.querySelectorAll('.category-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const category = this.getAttribute('data-category');
+                    showPage('blog');
+                    
+                    // Получаем посты из localStorage
+                    const blogPosts = JSON.parse(localStorage.getItem('blogPosts')) || [];
+                    loadBlogPage(blogPosts, null, category);
+                    
+                    // Обновляем навигацию
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    document.querySelector('.nav-link[data-page="blog"]').classList.add('active');
+                });
+            });
+        }
+        
+        // Функция для загрузки недавних постов
+        function loadRecentPosts(posts) {
+            const recentPosts = document.getElementById('recentPosts');
+            recentPosts.innerHTML = '';
+            
+            posts.forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.className = 'recent-post';
+                postElement.innerHTML = `
+                    <img src="${post.image}" alt="${post.title}" class="recent-post-image">
+                    <div>
+                        <h4 class="recent-post-title">${post.title}</h4>
+                        <div class="recent-post-date">${formatDate(post.date)}</div>
+                    </div>
+                `;
+                
+                // Добавляем обработчик клика для просмотра полного поста
+                postElement.addEventListener('click', function() {
+                    viewPost(post.id);
+                });
+                
+                recentPosts.appendChild(postElement);
+            });
+        }
+        
+        // Функция для загрузки аватарок
+        function loadAvatars(avatars) {
+            const avatarSelection = document.getElementById('avatarSelection');
+            avatarSelection.innerHTML = '';
+            
+            avatars.forEach((avatar, index) => {
+                const avatarElement = document.createElement('img');
+                avatarElement.className = 'avatar-option';
+                avatarElement.src = avatar;
+                avatarElement.alt = `Аватарка ${index + 1}`;
+                avatarElement.setAttribute('data-avatar-url', avatar);
+                
+                // Выбираем первую аватарку по умолчанию
+                if (index === 0) {
+                    avatarElement.classList.add('selected');
+                    document.getElementById('selectedAvatar').value = avatar;
+                }
+                
+                avatarSelection.appendChild(avatarElement);
+            });
+        }
+        
+        // Функция для просмотра полного поста
+        function viewPost(postId) {
+            const blogPosts = JSON.parse(localStorage.getItem('blogPosts')) || [];
+            const post = blogPosts.find(p => p.id === postId);
+            
+            if (post) {
+                // Создаем модальное окно для просмотра поста
+                const modal = document.createElement('div');
+                modal.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.8);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 1000;
+                    padding: 20px;
+                `;
+                
+                modal.innerHTML = `
+                    <div style="
+                        background-color: white;
+                        border-radius: var(--border-radius);
+                        max-width: 800px;
+                        max-height: 90vh;
+                        overflow-y: auto;
+                        width: 100%;
+                        position: relative;
+                    ">
+                        <button style="
+                            position: absolute;
+                            top: 15px;
+                            right: 15px;
+                            background: none;
+                            border: none;
+                            font-size: 24px;
+                            cursor: pointer;
+                            color: var(--gray);
+                            z-index: 1001;
+                        " id="closeModalBtn">&times;</button>
+                        
+                        <img src="${post.image}" alt="${post.title}" style="width: 100%; height: 300px; object-fit: cover; border-radius: var(--border-radius) var(--border-radius) 0 0;">
+                        
+                        <div style="padding: 30px;">
+                            <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                                <span style="background-color: var(--light-gray); padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; margin-right: 15px;">${post.category}</span>
+                                <span style="color: var(--gray); font-size: 0.9rem;"><i class="far fa-calendar"></i> ${formatDate(post.date)}</span>
+                            </div>
+                            
+                            <h2 style="font-size: 2rem; margin-bottom: 20px; color: var(--dark);">${post.title}</h2>
+                            
+                            <div style="margin-bottom: 30px; line-height: 1.7; color: var(--dark);">
+                                ${post.content.replace(/\n/g, '<br>')}
+                            </div>
+                            
+                            <div style="display: flex; align-items: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--light-gray);">
+                                <img src="${post.authorAvatar}" alt="${post.author}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 15px;">
+                                <div>
+                                    <div style="font-weight: 500;">${post.author}</div>
+                                    <div style="color: var(--gray); font-size: 0.9rem;">Опубликовано ${formatDate(post.date)}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                
+                // Обработчик закрытия модального окна
+                document.getElementById('closeModalBtn').addEventListener('click', function() {
+                    document.body.removeChild(modal);
+                });
+                
+                // Закрытие по клику вне модального окна
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        document.body.removeChild(modal);
+                    }
+                });
+            } else {
+                alert('Пост не найден!');
+            }
+        }
+        
+        // Функция для форматирования даты
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ru-RU', options);
+        }
+    </script>
 </body>
 </html>
