@@ -3,144 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkyBrowser - Полностью рабочий веб-браузер</title>
+    <title>SkyBrowser Pro - Умный Браузер</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            /* Темная тема по умолчанию */
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #60a5fa;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark-bg: #0f172a;
+            --dark-surface: #1e293b;
+            --dark-surface-light: #334155;
+            --dark-text: #f1f5f9;
+            --dark-text-secondary: #cbd5e1;
+            --light-bg: #f8fafc;
+            --light-surface: #ffffff;
+            --light-surface-light: #f1f5f9;
+            --light-text: #1e293b;
+            --light-text-secondary: #64748b;
+            --radius: 12px;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="light"] {
+            --bg-color: var(--light-bg);
+            --surface-color: var(--light-surface);
+            --surface-light-color: var(--light-surface-light);
+            --text-color: var(--light-text);
+            --text-secondary-color: var(--light-text-secondary);
+            --border-color: #e2e8f0;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: var(--dark-bg);
+            --surface-color: var(--dark-surface);
+            --surface-light-color: var(--dark-surface-light);
+            --text-color: var(--dark-text);
+            --text-secondary-color: var(--dark-text-secondary);
+            --border-color: #334155;
+        }
+
+        [data-theme="blue"] {
+            --bg-color: #0c4a6e;
+            --surface-color: #075985;
+            --surface-light-color: #0369a1;
+            --text-color: #f0f9ff;
+            --text-secondary-color: #bae6fd;
+            --border-color: #0284c7;
+        }
+
+        [data-theme="purple"] {
+            --bg-color: #4c1d95;
+            --surface-color: #5b21b6;
+            --surface-light-color: #7c3aed;
+            --text-color: #faf5ff;
+            --text-secondary-color: #e9d5ff;
+            --border-color: #8b5cf6;
+        }
+
+        [data-theme="green"] {
+            --bg-color: #064e3b;
+            --surface-color: #065f46;
+            --surface-light-color: #059669;
+            --text-color: #f0fdf4;
+            --text-secondary-color: #bbf7d0;
+            --border-color: #10b981;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', system-ui, sans-serif;
         }
-        
+
         body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: #f1f5f9;
+            background: var(--bg-color);
+            color: var(--text-color);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            transition: var(--transition);
         }
-        
+
         /* Заголовок */
         .header {
-            background: rgba(15, 23, 42, 0.95);
+            background: var(--surface-color);
             padding: 15px 25px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid #334155;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
         }
-        
+
         .logo {
             display: flex;
             align-items: center;
             gap: 12px;
         }
-        
+
         .logo-icon {
-            color: #3b82f6;
-            font-size: 24px;
+            color: var(--primary);
+            font-size: 28px;
         }
-        
+
         .logo-text {
-            font-size: 22px;
-            font-weight: 700;
-            background: linear-gradient(90deg, #60a5fa, #3b82f6, #8b5cf6);
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
         /* Панель навигации */
         .nav-container {
             display: flex;
             padding: 15px 25px;
             gap: 15px;
             align-items: center;
-            background: rgba(15, 23, 42, 0.9);
-            border-bottom: 1px solid #334155;
+            background: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
         }
-        
+
         .nav-btn {
-            background: rgba(51, 65, 85, 0.8);
-            color: #cbd5e1;
+            background: var(--surface-light-color);
+            color: var(--text-secondary-color);
             border: none;
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: var(--transition);
             font-size: 18px;
         }
-        
+
         .nav-btn:hover {
-            background: #475569;
-            color: #f1f5f9;
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
         }
-        
+
         .nav-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            transform: none;
         }
-        
+
         .url-bar-container {
             flex: 1;
             display: flex;
             gap: 10px;
+            align-items: center;
         }
-        
+
         .url-bar {
             flex: 1;
-            background: rgba(30, 41, 59, 0.9);
-            border: 1px solid #475569;
+            background: var(--surface-light-color);
+            border: 2px solid var(--border-color);
             border-radius: 24px;
-            padding: 12px 20px;
-            color: #f1f5f9;
+            padding: 14px 24px;
+            color: var(--text-color);
             font-size: 16px;
             outline: none;
-            transition: all 0.3s;
+            transition: var(--transition);
         }
-        
+
         .url-bar:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
         }
-        
+
         .go-btn {
-            background: linear-gradient(90deg, #3b82f6, #2563eb);
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
             color: white;
             border: none;
-            padding: 12px 28px;
+            padding: 14px 30px;
             border-radius: 24px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: var(--transition);
             display: flex;
             align-items: center;
             gap: 8px;
             white-space: nowrap;
         }
-        
+
         .go-btn:hover {
-            background: linear-gradient(90deg, #2563eb, #1d4ed8);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            background: linear-gradient(90deg, var(--primary-dark), var(--primary));
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
         }
-        
+
         /* Контейнер браузера */
         .browser-container {
             flex: 1;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
-        
+
         /* Домашняя страница */
         .home-page {
             flex: 1;
@@ -150,68 +231,75 @@
             justify-content: center;
             padding: 40px;
             text-align: center;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
+            background: linear-gradient(135deg, var(--surface-color) 0%, var(--bg-color) 100%);
+            transition: var(--transition);
         }
-        
+
         .home-page.hidden {
             display: none;
         }
-        
+
         .search-logo {
             font-size: 80px;
             margin-bottom: 30px;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            animation: float 3s ease-in-out infinite;
         }
-        
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
         .home-title {
-            font-size: 42px;
-            font-weight: 700;
+            font-size: 48px;
+            font-weight: 800;
             margin-bottom: 10px;
-            background: linear-gradient(90deg, #60a5fa, #a78bfa);
+            background: linear-gradient(90deg, var(--primary-light), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        
+
         .home-subtitle {
-            color: #cbd5e1;
+            color: var(--text-secondary-color);
             font-size: 18px;
             margin-bottom: 40px;
             max-width: 600px;
         }
-        
+
         .home-search-container {
             width: 100%;
             max-width: 700px;
             position: relative;
             margin-bottom: 40px;
         }
-        
+
         .home-search {
             width: 100%;
-            background: rgba(30, 41, 59, 0.9);
-            border: 2px solid #475569;
+            background: var(--surface-light-color);
+            border: 2px solid var(--border-color);
             border-radius: 50px;
             padding: 18px 60px 18px 30px;
-            color: #f1f5f9;
+            color: var(--text-color);
             font-size: 18px;
             outline: none;
-            transition: all 0.3s;
+            transition: var(--transition);
         }
-        
+
         .home-search:focus {
-            border-color: #3b82f6;
+            border-color: var(--primary);
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
         }
-        
+
         .home-search-btn {
             position: absolute;
             right: 8px;
             top: 8px;
-            background: linear-gradient(90deg, #3b82f6, #2563eb);
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
             color: white;
             border: none;
             width: 50px;
@@ -221,46 +309,50 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: var(--transition);
             font-size: 20px;
         }
-        
+
         .home-search-btn:hover {
-            background: linear-gradient(90deg, #2563eb, #1d4ed8);
-            transform: scale(1.05);
+            background: linear-gradient(90deg, var(--primary-dark), var(--primary));
+            transform: scale(1.1);
         }
-        
+
         .quick-links {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             gap: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
             max-width: 800px;
+            width: 100%;
         }
-        
+
         .quick-link {
-            background: rgba(30, 41, 59, 0.8);
+            background: var(--surface-light-color);
             border-radius: 16px;
             padding: 20px;
-            width: 140px;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 12px;
             text-decoration: none;
-            color: #f1f5f9;
-            transition: all 0.3s;
+            color: var(--text-color);
+            transition: var(--transition);
             border: 1px solid transparent;
             cursor: pointer;
         }
-        
+
         .quick-link:hover {
-            background: rgba(51, 65, 85, 0.9);
-            border-color: #3b82f6;
+            background: var(--primary);
+            color: white;
             transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--shadow);
         }
-        
+
+        .quick-link:hover .quick-link-icon {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
         .quick-link-icon {
             font-size: 28px;
             width: 60px;
@@ -270,135 +362,48 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #60a5fa;
+            color: var(--primary);
+            transition: var(--transition);
         }
-        
+
         .quick-link-text {
             font-size: 14px;
             font-weight: 600;
             text-align: center;
         }
-        
-        /* Веб-просмотр через перенаправление */
-        .web-view {
-            flex: 1;
-            display: none;
-            flex-direction: column;
-            background: #0f172a;
-        }
-        
-        .web-view.active {
-            display: flex;
-        }
-        
-        .web-view-frame {
-            flex: 1;
-            border: none;
-            background: white;
-        }
-        
-        .web-view-info {
-            background: rgba(15, 23, 42, 0.95);
-            padding: 15px 25px;
-            border-top: 1px solid #334155;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .web-view-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #cbd5e1;
-        }
-        
-        .web-view-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .web-view-btn {
-            background: rgba(51, 65, 85, 0.8);
-            color: #cbd5e1;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 14px;
-        }
-        
-        .web-view-btn:hover {
-            background: #475569;
-            color: #f1f5f9;
-        }
-        
-        /* Уведомление */
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #10b981;
-            color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.5s;
-            z-index: 1000;
-        }
-        
-        .notification.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        
-        .notification-error {
-            background: #ef4444;
-        }
-        
-        .notification-warning {
-            background: #f59e0b;
-        }
-        
+
         /* Поисковая выдача */
         .search-results {
             flex: 1;
             padding: 30px;
-            background: #0f172a;
+            background: var(--bg-color);
             display: none;
             flex-direction: column;
             align-items: center;
+            overflow-y: auto;
         }
-        
+
         .search-results.active {
             display: flex;
         }
-        
+
         .search-header {
             width: 100%;
             max-width: 800px;
             margin-bottom: 30px;
         }
-        
+
         .search-query {
-            font-size: 24px;
-            color: #f1f5f9;
+            font-size: 28px;
+            color: var(--text-color);
             margin-bottom: 10px;
         }
-        
+
         .search-stats {
-            color: #94a3b8;
+            color: var(--text-secondary-color);
             font-size: 14px;
         }
-        
+
         .results-container {
             width: 100%;
             max-width: 800px;
@@ -406,127 +411,568 @@
             flex-direction: column;
             gap: 20px;
         }
-        
+
         .search-result {
-            background: rgba(30, 41, 59, 0.8);
-            border-radius: 12px;
+            background: var(--surface-color);
+            border-radius: var(--radius);
             padding: 20px;
             border: 1px solid transparent;
-            transition: all 0.3s;
+            transition: var(--transition);
             cursor: pointer;
         }
-        
+
         .search-result:hover {
-            border-color: #3b82f6;
-            background: rgba(51, 65, 85, 0.9);
+            border-color: var(--primary);
+            background: var(--surface-light-color);
             transform: translateY(-2px);
+            box-shadow: var(--shadow);
         }
-        
+
         .result-title {
             font-size: 20px;
-            font-weight: 600;
-            color: #3b82f6;
+            font-weight: 700;
+            color: var(--primary);
             margin-bottom: 8px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        
+
         .result-url {
-            color: #10b981;
+            color: var(--success);
             font-size: 14px;
             margin-bottom: 10px;
             word-break: break-all;
         }
-        
+
         .result-description {
-            color: #cbd5e1;
+            color: var(--text-secondary-color);
             font-size: 16px;
-            line-height: 1.5;
+            line-height: 1.6;
         }
-        
-        /* Панель вкладок */
-        .tabs-container {
-            background: rgba(30, 41, 59, 0.9);
-            border-bottom: 1px solid #334155;
+
+        /* Настройки */
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 380px;
+            height: 100vh;
+            background: var(--surface-color);
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+            z-index: 2000;
             display: flex;
-            padding: 10px 15px;
-            gap: 8px;
-            overflow-x: auto;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
         }
-        
-        .tab {
-            background: rgba(51, 65, 85, 0.7);
-            padding: 10px 20px;
-            border-radius: 8px;
+
+        .settings-panel.active {
+            right: 0;
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .settings-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .settings-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary-color);
+            font-size: 24px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .settings-close:hover {
+            color: var(--danger);
+        }
+
+        .settings-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
             gap: 10px;
-            min-width: 180px;
-            max-width: 250px;
+        }
+
+        .theme-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .theme-option {
+            padding: 15px;
+            border-radius: var(--radius);
+            background: var(--surface-light-color);
+            border: 2px solid var(--border-color);
             cursor: pointer;
-            transition: all 0.2s;
-            border: 1px solid transparent;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
         }
-        
-        .tab:hover {
-            background: rgba(71, 85, 105, 0.9);
+
+        .theme-option:hover {
+            border-color: var(--primary);
         }
-        
-        .tab.active {
-            background: rgba(15, 23, 42, 0.95);
-            border: 1px solid #475569;
+
+        .theme-option.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary);
         }
-        
-        .tab-favicon {
-            width: 16px;
-            height: 16px;
-            object-fit: contain;
+
+        .theme-preview {
+            width: 100%;
+            height: 40px;
+            border-radius: 8px;
         }
-        
-        .tab-title {
-            flex: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+
+        .theme-dark { background: linear-gradient(90deg, #0f172a, #1e293b); }
+        .theme-light { background: linear-gradient(90deg, #f8fafc, #ffffff); }
+        .theme-blue { background: linear-gradient(90deg, #0c4a6e, #075985); }
+        .theme-purple { background: linear-gradient(90deg, #4c1d95, #5b21b6); }
+        .theme-green { background: linear-gradient(90deg, #064e3b, #065f46); }
+
+        .theme-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-item input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+
+        .checkbox-label {
+            color: var(--text-secondary-color);
             font-size: 14px;
         }
-        
-        .tab-close {
-            color: #94a3b8;
-            font-size: 14px;
-            padding: 2px;
+
+        .settings-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: var(--radius);
+            background: var(--surface-light-color);
+            border: 2px solid var(--border-color);
+            color: var(--text-color);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .settings-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .settings-btn.danger {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .settings-btn.danger:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Информационная панель */
+        .info-panel {
+            background: var(--surface-color);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: var(--text-secondary-color);
+        }
+
+        .info-value {
+            color: var(--text-color);
+            font-weight: 600;
+        }
+
+        /* Уведомление */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 15px 25px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 1000;
+            max-width: 400px;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .notification-error {
+            background: var(--danger);
+        }
+
+        .notification-warning {
+            background: var(--warning);
+        }
+
+        .notification-info {
+            background: var(--primary);
+        }
+
+        /* Панель инструментов */
+        .tools-panel {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .tool-btn {
+            background: var(--surface-light-color);
+            color: var(--text-secondary-color);
+            border: none;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
-        }
-        
-        .tab-close:hover {
-            background: #64748b;
-            color: #f1f5f9;
-        }
-        
-        .new-tab-btn {
-            background: transparent;
-            color: #94a3b8;
-            border: none;
-            font-size: 20px;
-            padding: 5px 15px;
             cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.2s;
+            transition: var(--transition);
+            font-size: 16px;
+            position: relative;
+        }
+
+        .tool-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tool-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        /* Модальное окно */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--surface-color);
+            border-radius: var(--radius);
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: var(--shadow);
+            animation: modalSlide 0.3s ease;
+        }
+
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        .modal-text {
+            color: var(--text-secondary-color);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: var(--radius);
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-btn.primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .modal-btn.secondary {
+            background: var(--surface-light-color);
+            color: var(--text-color);
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        /* История */
+        .history-panel {
+            position: fixed;
+            top: 0;
+            left: -400px;
+            width: 380px;
+            height: 100vh;
+            background: var(--surface-color);
+            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .history-panel.active {
+            left: 0;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .history-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .history-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: var(--radius);
+            background: var(--surface-light-color);
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .history-item:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .history-item:hover .history-url {
+            color: white;
+        }
+
+        .history-favicon {
+            width: 20px;
+            height: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        
-        .new-tab-btn:hover {
-            background: rgba(100, 116, 139, 0.3);
-            color: #f1f5f9;
+
+        .history-content {
+            flex: 1;
+            min-width: 0;
         }
-        
+
+        .history-title-text {
+            font-weight: 600;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .history-url {
+            font-size: 12px;
+            color: var(--text-secondary-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .history-time {
+            font-size: 11px;
+            color: var(--text-secondary-color);
+        }
+
+        /* Закладки */
+        .bookmarks-panel {
+            position: fixed;
+            top: 0;
+            left: -400px;
+            width: 380px;
+            height: 100vh;
+            background: var(--surface-color);
+            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .bookmarks-panel.active {
+            left: 0;
+        }
+
+        /* Контекстное меню */
+        .context-menu {
+            position: fixed;
+            background: var(--surface-color);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            z-index: 4000;
+            display: none;
+            min-width: 200px;
+            border: 1px solid var(--border-color);
+        }
+
+        .context-menu.active {
+            display: block;
+        }
+
+        .context-item {
+            padding: 12px 20px;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .context-item:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Прогресс-бар */
+        .progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.3s ease;
+            z-index: 1001;
+        }
+
         /* Адаптивность */
         @media (max-width: 768px) {
             .header {
@@ -549,12 +995,12 @@
             }
             
             .url-bar {
-                padding: 10px 16px;
+                padding: 12px 20px;
                 font-size: 14px;
             }
             
             .go-btn {
-                padding: 10px 20px;
+                padding: 12px 20px;
                 font-size: 14px;
             }
             
@@ -568,121 +1014,122 @@
             }
             
             .quick-links {
-                gap: 10px;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
             }
             
-            .quick-link {
-                width: 110px;
-                padding: 15px 10px;
+            .search-results {
+                padding: 20px;
             }
             
-            .web-view-info {
-                padding: 10px 15px;
-                flex-direction: column;
-                gap: 10px;
-                align-items: flex-start;
-            }
-            
-            .web-view-actions {
+            .settings-panel,
+            .history-panel,
+            .bookmarks-panel {
                 width: 100%;
-                justify-content: space-between;
+                right: -100%;
+            }
+            
+            .settings-panel.active,
+            .history-panel.active,
+            .bookmarks-panel.active {
+                right: 0;
             }
         }
-        
-        /* Стили для скроллбара */
+
+        /* Анимации */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Кастомный скроллбар */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
-        
+
         ::-webkit-scrollbar-track {
-            background: rgba(30, 41, 59, 0.5);
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #475569;
+            background: var(--surface-light-color);
             border-radius: 4px;
         }
-        
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
         ::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
+            background: var(--primary-dark);
         }
-        
-        /* Секция истории и закладок */
-        .history-section {
-            padding: 30px;
-            background: #0f172a;
-            display: none;
+
+        /* Утилитарные классы */
+        .hidden {
+            display: none !important;
         }
-        
-        .history-section.active {
-            display: block;
+
+        .visible {
+            display: block !important;
         }
-        
-        .section-title {
-            font-size: 24px;
-            color: #f1f5f9;
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-20 {
+            margin-top: 20px;
+        }
+
+        .mb-20 {
             margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
-        
-        .history-items {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 15px;
+
+        .full-width {
+            width: 100%;
         }
-        
-        .history-item {
-            background: rgba(30, 41, 59, 0.8);
-            border-radius: 10px;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .history-item:hover {
-            background: rgba(51, 65, 85, 0.9);
-        }
-        
-        .history-item-icon {
-            color: #60a5fa;
-            font-size: 20px;
-        }
-        
-        .history-item-content {
-            flex: 1;
-        }
-        
-        .history-item-title {
-            font-weight: 600;
-            color: #f1f5f9;
-            margin-bottom: 4px;
-        }
-        
-        .history-item-url {
-            color: #94a3b8;
-            font-size: 12px;
-            word-break: break-all;
+
+        /* Эффекты */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
     </style>
 </head>
-<body>
+<body data-theme="dark">
+    <!-- Прогресс-бар загрузки -->
+    <div class="progress-bar" id="progress-bar"></div>
+
     <!-- Шапка браузера -->
     <div class="header">
         <div class="logo">
             <div class="logo-icon"><i class="fas fa-compass"></i></div>
-            <div class="logo-text">SkyBrowser</div>
+            <div class="logo-text">SkyBrowser Pro</div>
         </div>
-        <div class="header-info">
-            <span id="current-time">00:00</span>
-            <span id="connection-status" style="margin-left: 15px; font-size: 12px; color: #10b981;">
+        
+        <div class="header-controls">
+            <div class="tools-panel">
+                <button class="tool-btn" id="settings-btn" title="Настройки">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="tool-btn" id="history-btn" title="История">
+                    <i class="fas fa-history"></i>
+                </button>
+                <button class="tool-btn" id="bookmarks-btn" title="Закладки">
+                    <i class="fas fa-bookmark"></i>
+                    <span class="badge" id="bookmarks-count">0</span>
+                </button>
+                <button class="tool-btn" id="downloads-btn" title="Загрузки">
+                    <i class="fas fa-download"></i>
+                </button>
+            </div>
+            
+            <div class="connection-status" id="connection-status" style="font-size: 12px; color: var(--success);">
                 <i class="fas fa-wifi"></i> Онлайн
-            </span>
+            </div>
         </div>
     </div>
     
@@ -694,15 +1141,19 @@
         <button class="nav-btn" id="home-btn" title="Домой"><i class="fas fa-home"></i></button>
         
         <div class="url-bar-container">
-            <input type="text" class="url-bar" id="url-bar" placeholder="Введите URL или поисковый запрос...">
+            <input type="text" class="url-bar" id="url-bar" placeholder="Введите URL или поисковый запрос..." autocomplete="off">
             <button class="go-btn" id="go-btn">
                 <i class="fas fa-search"></i>
                 <span class="go-text">Поиск</span>
             </button>
         </div>
         
-        <button class="nav-btn" id="history-btn" title="История"><i class="fas fa-history"></i></button>
-        <button class="nav-btn" id="bookmarks-btn" title="Закладки"><i class="fas fa-bookmark"></i></button>
+        <button class="nav-btn" id="new-tab-btn" title="Новая вкладка">
+            <i class="fas fa-plus"></i>
+        </button>
+        <button class="nav-btn" id="fullscreen-btn" title="Полный экран">
+            <i class="fas fa-expand"></i>
+        </button>
     </div>
     
     <!-- Контейнер браузера -->
@@ -712,8 +1163,8 @@
             <div class="search-logo">
                 <i class="fas fa-search"></i>
             </div>
-            <h1 class="home-title">SkyBrowser</h1>
-            <p class="home-subtitle">Полностью рабочий веб-браузер с поиском Google. Начните поиск прямо сейчас!</p>
+            <h1 class="home-title">SkyBrowser Pro</h1>
+            <p class="home-subtitle">Умный браузер с темной темой, расширенными настройками и интеграцией Google</p>
             
             <div class="home-search-container">
                 <input type="text" class="home-search" id="home-search" placeholder="Введите поисковый запрос или URL...">
@@ -722,43 +1173,8 @@
                 </button>
             </div>
             
-            <div class="quick-links">
-                <div class="quick-link" data-action="search" data-query="новости сегодня">
-                    <div class="quick-link-icon">
-                        <i class="fas fa-newspaper"></i>
-                    </div>
-                    <div class="quick-link-text">Новости</div>
-                </div>
-                <div class="quick-link" data-action="search" data-query="погода">
-                    <div class="quick-link-icon">
-                        <i class="fas fa-cloud-sun"></i>
-                    </div>
-                    <div class="quick-link-text">Погода</div>
-                </div>
-                <div class="quick-link" data-action="search" data-query="youtube">
-                    <div class="quick-link-icon">
-                        <i class="fab fa-youtube"></i>
-                    </div>
-                    <div class="quick-link-text">YouTube</div>
-                </div>
-                <div class="quick-link" data-action="search" data-query="карты google">
-                    <div class="quick-link-icon">
-                        <i class="fas fa-map-marked-alt"></i>
-                    </div>
-                    <div class="quick-link-text">Карты</div>
-                </div>
-                <div class="quick-link" data-action="url" data-url="https://translate.google.com">
-                    <div class="quick-link-icon">
-                        <i class="fas fa-language"></i>
-                    </div>
-                    <div class="quick-link-text">Переводчик</div>
-                </div>
-                <div class="quick-link" data-action="url" data-url="https://github.com">
-                    <div class="quick-link-icon">
-                        <i class="fab fa-github"></i>
-                    </div>
-                    <div class="quick-link-text">GitHub</div>
-                </div>
+            <div class="quick-links" id="quick-links">
+                <!-- Быстрые ссылки будут добавляться динамически -->
             </div>
         </div>
         
@@ -773,15 +1189,144 @@
                 <!-- Результаты поиска будут добавляться здесь -->
             </div>
         </div>
+    </div>
+    
+    <!-- Панель настроек -->
+    <div class="settings-panel" id="settings-panel">
+        <div class="settings-header">
+            <h2 class="settings-title"><i class="fas fa-cog"></i> Настройки</h2>
+            <button class="settings-close" id="settings-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
         
-        <!-- История просмотров -->
-        <div class="history-section" id="history-section">
-            <h2 class="section-title">
-                <i class="fas fa-history"></i>
-                История просмотров
-            </h2>
-            <div class="history-items" id="history-items">
-                <!-- История будет добавляться здесь -->
+        <div class="settings-section">
+            <h3 class="section-title"><i class="fas fa-palette"></i> Темы</h3>
+            <div class="theme-selector" id="theme-selector">
+                <!-- Темы будут добавлены динамически -->
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h3 class="section-title"><i class="fas fa-sliders-h"></i> Основные настройки</h3>
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="auto-complete" checked>
+                    <label for="auto-complete" class="checkbox-label">Автодополнение в поиске</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="save-history" checked>
+                    <label for="save-history" class="checkbox-label">Сохранять историю</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="notifications" checked>
+                    <label for="notifications" class="checkbox-label">Уведомления</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="dark-mode-auto">
+                    <label for="dark-mode-auto" class="checkbox-label">Авто темная тема</label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h3 class="section-title"><i class="fas fa-shield-alt"></i> Конфиденциальность</h3>
+            <button class="settings-btn" id="clear-history">
+                <i class="fas fa-trash"></i> Очистить историю
+            </button>
+            <button class="settings-btn" id="clear-cookies">
+                <i class="fas fa-cookie-bite"></i> Очистить куки
+            </button>
+            <button class="settings-btn danger" id="reset-settings">
+                <i class="fas fa-redo"></i> Сбросить настройки
+            </button>
+        </div>
+        
+        <div class="info-panel">
+            <h3 class="section-title"><i class="fas fa-info-circle"></i> Информация</h3>
+            <div class="info-item">
+                <span class="info-label">Версия браузера</span>
+                <span class="info-value" id="browser-version">1.0.0</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Всего посещений</span>
+                <span class="info-value" id="total-visits">0</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">История сохранена</span>
+                <span class="info-value" id="history-count">0</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Закладок</span>
+                <span class="info-value" id="bookmarks-settings-count">0</span>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h3 class="section-title"><i class="fas fa-code"></i> О разработчике</h3>
+            <p style="color: var(--text-secondary-color); font-size: 14px; line-height: 1.6;">
+                SkyBrowser Pro создан с использованием современных веб-технологий. 
+                Браузер работает полностью на HTML, CSS и JavaScript.
+            </p>
+        </div>
+    </div>
+    
+    <!-- Панель истории -->
+    <div class="history-panel" id="history-panel">
+        <div class="history-header">
+            <h2 class="history-title"><i class="fas fa-history"></i> История</h2>
+            <button class="settings-close" id="history-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="history-list" id="history-list">
+            <!-- История будет добавляться здесь -->
+        </div>
+    </div>
+    
+    <!-- Панель закладок -->
+    <div class="bookmarks-panel" id="bookmarks-panel">
+        <div class="history-header">
+            <h2 class="history-title"><i class="fas fa-bookmark"></i> Закладки</h2>
+            <button class="settings-close" id="bookmarks-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="history-list" id="bookmarks-list">
+            <!-- Закладки будут добавляться здесь -->
+        </div>
+        <button class="settings-btn" id="add-bookmark-btn" style="margin-top: 20px;">
+            <i class="fas fa-plus"></i> Добавить текущую страницу
+        </button>
+    </div>
+    
+    <!-- Контекстное меню -->
+    <div class="context-menu" id="context-menu">
+        <div class="context-item" data-action="open">
+            <i class="fas fa-external-link-alt"></i> Открыть
+        </div>
+        <div class="context-item" data-action="open-new-tab">
+            <i class="fas fa-plus-square"></i> Открыть в новой вкладке
+        </div>
+        <div class="context-item" data-action="bookmark">
+            <i class="fas fa-bookmark"></i> Добавить в закладки
+        </div>
+        <div class="context-item" data-action="copy">
+            <i class="fas fa-copy"></i> Копировать ссылку
+        </div>
+        <div class="context-item" data-action="share">
+            <i class="fas fa-share"></i> Поделиться
+        </div>
+    </div>
+    
+    <!-- Модальное окно -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h3 class="modal-title" id="modal-title">Подтверждение</h3>
+            <p class="modal-text" id="modal-text">Вы уверены, что хотите выполнить это действие?</p>
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" id="modal-cancel">Отмена</button>
+                <button class="modal-btn primary" id="modal-confirm">Подтвердить</button>
             </div>
         </div>
     </div>
@@ -793,124 +1338,187 @@
     </div>
     
     <script>
-        // Текущее время
-        function updateTime() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('current-time').textContent = timeString;
-        }
-        
-        setInterval(updateTime, 1000);
-        updateTime();
-        
-        // Основной класс браузера
-        class SkyBrowser {
+        // Основной класс SkyBrowser Pro
+        class SkyBrowserPro {
             constructor() {
-                this.currentView = 'home'; // home, search, history
+                this.currentView = 'home';
                 this.searchQuery = '';
-                this.history = JSON.parse(localStorage.getItem('skybrowser_history')) || [];
-                this.bookmarks = JSON.parse(localStorage.getItem('skybrowser_bookmarks')) || [];
+                this.history = JSON.parse(localStorage.getItem('skybrowser_pro_history')) || [];
+                this.bookmarks = JSON.parse(localStorage.getItem('skybrowser_pro_bookmarks')) || [];
+                this.settings = JSON.parse(localStorage.getItem('skybrowser_pro_settings')) || this.getDefaultSettings();
+                this.quickLinks = this.getDefaultQuickLinks();
+                this.contextMenuData = null;
+                this.modalCallback = null;
                 this.init();
             }
             
+            getDefaultSettings() {
+                return {
+                    theme: 'dark',
+                    autoComplete: true,
+                    saveHistory: true,
+                    notifications: true,
+                    darkModeAuto: false,
+                    totalVisits: 0,
+                    version: '1.0.0'
+                };
+            }
+            
+            getDefaultQuickLinks() {
+                return [
+                    { name: 'Google', url: 'https://www.google.com', icon: 'fab fa-google', color: '#4285F4' },
+                    { name: 'YouTube', url: 'https://www.youtube.com', icon: 'fab fa-youtube', color: '#FF0000' },
+                    { name: 'Gmail', url: 'https://mail.google.com', icon: 'fas fa-envelope', color: '#EA4335' },
+                    { name: 'Карты', url: 'https://www.google.com/maps', icon: 'fas fa-map-marked-alt', color: '#34A853' },
+                    { name: 'Переводчик', url: 'https://translate.google.com', icon: 'fas fa-language', color: '#FBBC05' },
+                    { name: 'GitHub', url: 'https://github.com', icon: 'fab fa-github', color: '#181717' },
+                    { name: 'Википедия', url: 'https://wikipedia.org', icon: 'fab fa-wikipedia-w', color: '#636466' },
+                    { name: 'Погода', url: 'https://www.google.com/search?q=погода', icon: 'fas fa-cloud-sun', color: '#1E90FF' }
+                ];
+            }
+            
             init() {
+                this.applySettings();
                 this.bindEvents();
+                this.updateDisplays();
                 this.showHomePage();
-                this.updateHistoryDisplay();
-                
-                // Фокус на поисковую строку
-                document.getElementById('home-search').focus();
-                
-                // Проверка соединения
                 this.checkConnection();
+                
+                // Увеличиваем счетчик посещений
+                this.settings.totalVisits++;
+                this.saveSettings();
+                
+                // Обновляем информацию
+                this.updateInfoPanel();
+                
+                console.log('SkyBrowser Pro загружен! Версия:', this.settings.version);
+            }
+            
+            applySettings() {
+                // Применяем тему
+                document.body.setAttribute('data-theme', this.settings.theme);
+                
+                // Применяем настройки
+                document.getElementById('auto-complete').checked = this.settings.autoComplete;
+                document.getElementById('save-history').checked = this.settings.saveHistory;
+                document.getElementById('notifications').checked = this.settings.notifications;
+                document.getElementById('dark-mode-auto').checked = this.settings.darkModeAuto;
+                
+                // Авто темная тема
+                if (this.settings.darkModeAuto) {
+                    this.applyAutoDarkMode();
+                }
+            }
+            
+            applyAutoDarkMode() {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                this.settings.theme = prefersDark ? 'dark' : 'light';
+                document.body.setAttribute('data-theme', this.settings.theme);
+                this.saveSettings();
+                this.updateThemeSelector();
             }
             
             bindEvents() {
-                // Кнопка "Поиск" в панели навигации
-                document.getElementById('go-btn').onclick = () => {
-                    this.handleSearch();
-                };
-                
-                // Поиск по нажатию Enter в URL-баре
+                // Основные кнопки навигации
+                document.getElementById('go-btn').onclick = () => this.handleSearch();
                 document.getElementById('url-bar').addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        this.handleSearch();
-                    }
+                    if (e.key === 'Enter') this.handleSearch();
                 });
-                
-                // Поиск на домашней странице
-                document.getElementById('home-search-btn').onclick = () => {
-                    this.handleHomeSearch();
-                };
-                
-                // Поиск по нажатию Enter на домашней странице
+                document.getElementById('home-search-btn').onclick = () => this.handleHomeSearch();
                 document.getElementById('home-search').addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        this.handleHomeSearch();
+                    if (e.key === 'Enter') this.handleHomeSearch();
+                });
+                document.getElementById('home-btn').onclick = () => this.showHomePage();
+                document.getElementById('refresh-btn').onclick = () => this.refresh();
+                document.getElementById('new-tab-btn').onclick = () => this.openNewTab();
+                document.getElementById('fullscreen-btn').onclick = () => this.toggleFullscreen();
+                
+                // Панель настроек
+                document.getElementById('settings-btn').onclick = () => this.togglePanel('settings');
+                document.getElementById('settings-close').onclick = () => this.togglePanel('settings');
+                document.getElementById('history-btn').onclick = () => this.togglePanel('history');
+                document.getElementById('history-close').onclick = () => this.togglePanel('history');
+                document.getElementById('bookmarks-btn').onclick = () => this.togglePanel('bookmarks');
+                document.getElementById('bookmarks-close').onclick = () => this.togglePanel('bookmarks');
+                document.getElementById('downloads-btn').onclick = () => this.showNotification('Загрузки пока не реализованы', 'info');
+                
+                // Настройки
+                document.getElementById('auto-complete').onchange = (e) => {
+                    this.settings.autoComplete = e.target.checked;
+                    this.saveSettings();
+                };
+                document.getElementById('save-history').onchange = (e) => {
+                    this.settings.saveHistory = e.target.checked;
+                    this.saveSettings();
+                };
+                document.getElementById('notifications').onchange = (e) => {
+                    this.settings.notifications = e.target.checked;
+                    this.saveSettings();
+                };
+                document.getElementById('dark-mode-auto').onchange = (e) => {
+                    this.settings.darkModeAuto = e.target.checked;
+                    this.saveSettings();
+                    if (e.target.checked) {
+                        this.applyAutoDarkMode();
+                    }
+                };
+                
+                // Кнопки очистки
+                document.getElementById('clear-history').onclick = () => this.clearHistory();
+                document.getElementById('clear-cookies').onclick = () => this.clearCookies();
+                document.getElementById('reset-settings').onclick = () => this.resetSettings();
+                document.getElementById('add-bookmark-btn').onclick = () => this.addCurrentToBookmarks();
+                
+                // Модальное окно
+                document.getElementById('modal-cancel').onclick = () => this.hideModal();
+                document.getElementById('modal-confirm').onclick = () => {
+                    if (this.modalCallback) this.modalCallback();
+                    this.hideModal();
+                };
+                
+                // Контекстное меню
+                document.addEventListener('click', () => this.hideContextMenu());
+                document.addEventListener('contextmenu', (e) => {
+                    if (e.target.closest('.search-result') || e.target.closest('.history-item') || e.target.closest('.quick-link')) {
+                        e.preventDefault();
+                        this.showContextMenu(e, e.target.closest('[data-url]'));
                     }
                 });
                 
-                // Кнопка "Домой"
-                document.getElementById('home-btn').onclick = () => {
-                    this.showHomePage();
-                };
+                // Автодополнение
+                if (this.settings.autoComplete) {
+                    this.setupAutoComplete();
+                }
                 
-                // Кнопка "История"
-                document.getElementById('history-btn').onclick = () => {
-                    this.showHistory();
-                };
+                // События сети
+                window.addEventListener('online', () => this.updateConnectionStatus(true));
+                window.addEventListener('offline', () => this.updateConnectionStatus(false));
                 
-                // Кнопка "Обновить"
-                document.getElementById('refresh-btn').onclick = () => {
-                    if (this.currentView === 'search') {
-                        this.performSearch(this.searchQuery, true);
-                    }
-                };
-                
-                // Кнопка "Назад" и "Вперёд" - эмуляция
-                document.getElementById('back-btn').onclick = () => {
-                    this.showNotification("Навигация назад (эмуляция)");
-                };
-                
-                document.getElementById('forward-btn').onclick = () => {
-                    this.showNotification("Навигация вперёд (эмуляция)");
-                };
-                
-                // Кнопка "Закладки"
-                document.getElementById('bookmarks-btn').onclick = () => {
-                    this.showNotification("Закладки пока не реализованы");
-                };
-                
-                // Быстрые ссылки
-                document.querySelectorAll('.quick-link').forEach(link => {
-                    link.onclick = () => {
-                        const action = link.getAttribute('data-action');
-                        if (action === 'search') {
-                            const query = link.getAttribute('data-query');
-                            document.getElementById('home-search').value = query;
-                            this.performSearch(query);
-                        } else if (action === 'url') {
-                            const url = link.getAttribute('data-url');
-                            this.openUrl(url);
-                        }
-                    };
-                });
-                
-                // Обработка кликов по результатам поиска
+                // Закрытие панелей по клику вне их
                 document.addEventListener('click', (e) => {
-                    if (e.target.closest('.search-result')) {
-                        const result = e.target.closest('.search-result');
-                        const url = result.getAttribute('data-url');
-                        const title = result.getAttribute('data-title');
-                        this.openUrl(url, title);
+                    if (!e.target.closest('.settings-panel') && !e.target.closest('#settings-btn')) {
+                        document.getElementById('settings-panel').classList.remove('active');
                     }
-                    
-                    if (e.target.closest('.history-item')) {
-                        const item = e.target.closest('.history-item');
-                        const url = item.getAttribute('data-url');
-                        const title = item.getAttribute('data-title');
-                        this.openUrl(url, title);
+                    if (!e.target.closest('.history-panel') && !e.target.closest('#history-btn')) {
+                        document.getElementById('history-panel').classList.remove('active');
                     }
+                    if (!e.target.closest('.bookmarks-panel') && !e.target.closest('#bookmarks-btn')) {
+                        document.getElementById('bookmarks-panel').classList.remove('active');
+                    }
+                });
+            }
+            
+            setupAutoComplete() {
+                const urlBar = document.getElementById('url-bar');
+                const homeSearch = document.getElementById('home-search');
+                
+                [urlBar, homeSearch].forEach(input => {
+                    input.addEventListener('input', (e) => {
+                        const query = e.target.value.toLowerCase();
+                        if (query.length > 2) {
+                            // Можно добавить подсказки из истории и закладок
+                        }
+                    });
                 });
             }
             
@@ -931,41 +1539,40 @@
             performSearch(query, isRefresh = false) {
                 if (!query.trim()) return;
                 
-                // Сохраняем запрос
+                // Показываем прогресс-бар
+                this.showProgressBar();
+                
                 this.searchQuery = query;
                 this.currentView = 'search';
                 
                 // Обновляем UI
                 document.getElementById('home-page').classList.add('hidden');
                 document.getElementById('search-results').classList.add('active');
-                document.getElementById('history-section').classList.remove('active');
                 
                 // Обновляем URL-бар
                 document.getElementById('url-bar').value = query;
                 
-                // Показываем заголовок поиска
-                document.getElementById('search-query').textContent = `Результаты поиска: "${query}"`;
-                
                 if (!isRefresh) {
-                    this.showNotification(`Ищем: "${query}"`);
+                    this.showNotification(`Ищем: "${query}"`, 'info');
                 }
                 
-                // Имитация задержки поиска
+                // Имитация загрузки
                 setTimeout(() => {
                     this.generateSearchResults(query);
-                }, 500);
+                    this.hideProgressBar();
+                }, 800);
             }
             
             generateSearchResults(query) {
                 const resultsContainer = document.getElementById('results-container');
                 resultsContainer.innerHTML = '';
                 
-                // Генерация различных типов результатов поиска
                 const results = this.getSearchResults(query);
                 
                 // Обновляем статистику
-                document.getElementById('search-stats').textContent = 
-                    `Примерно ${results.length} ${this.getRussianPlural(results.length, ['результат', 'результата', 'результатов'])}`;
+                const stats = `Примерно ${results.length} ${this.getRussianPlural(results.length, ['результат', 'результата', 'результатов'])} (0.42 сек.)`;
+                document.getElementById('search-stats').textContent = stats;
+                document.getElementById('search-query').textContent = `Результаты поиска: "${query}"`;
                 
                 // Добавляем результаты
                 results.forEach((result, index) => {
@@ -983,155 +1590,77 @@
                         <div class="result-description">${result.description}</div>
                     `;
                     
+                    resultElement.onclick = () => this.openUrl(result.url, result.title);
+                    
                     resultsContainer.appendChild(resultElement);
                 });
                 
                 // Добавляем связанные запросы
                 this.addRelatedQueries(query);
+                
+                // Добавляем в историю
+                if (this.settings.saveHistory) {
+                    this.addToHistory(`Поиск: "${query}"`, `https://www.google.com/search?q=${encodeURIComponent(query)}`);
+                }
             }
             
             getSearchResults(query) {
                 const lowerQuery = query.toLowerCase();
                 const results = [];
                 
-                // Определяем тип запроса и генерируем соответствующие результаты
+                // Google результат
+                results.push({
+                    title: `Результаты поиска "${query}" - Google`,
+                    url: `https://www.google.com/search?q=${encodeURIComponent(query)}`,
+                    description: `Найдите информацию в Google по запросу "${query}". Миллионы результатов на разных языках.`,
+                    icon: 'fab fa-google'
+                });
+                
+                // Википедия
+                results.push({
+                    title: `"${query}" - Википедия`,
+                    url: `https://ru.wikipedia.org/wiki/${encodeURIComponent(query)}`,
+                    description: `Статья в свободной энциклопедии по теме "${query}". Подробная информация и ссылки.`,
+                    icon: 'fab fa-wikipedia-w'
+                });
+                
+                // YouTube
+                results.push({
+                    title: `Видео "${query}" - YouTube`,
+                    url: `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`,
+                    description: `Смотрите видео на YouTube связанные с "${query}". Обучающие ролики, обзоры, музыка.`,
+                    icon: 'fab fa-youtube'
+                });
+                
+                // Картинки Google
+                results.push({
+                    title: `Изображения "${query}" - Google Images`,
+                    url: `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`,
+                    description: `Картинки и фотографии по запросу "${query}". Высокое качество, разные размеры.`,
+                    icon: 'fas fa-images'
+                });
+                
+                // Новости (если запрос подходит)
                 if (lowerQuery.includes('новости') || lowerQuery.includes('news')) {
-                    results.push(...this.getNewsResults(query));
-                } else if (lowerQuery.includes('погода') || lowerQuery.includes('weather')) {
-                    results.push(...this.getWeatherResults(query));
-                } else if (lowerQuery.includes('youtube') || lowerQuery.includes('видео')) {
-                    results.push(...this.getVideoResults(query));
-                } else if (lowerQuery.includes('карт') || lowerQuery.includes('map')) {
-                    results.push(...this.getMapResults(query));
-                } else if (lowerQuery.includes('перевод') || lowerQuery.includes('translate')) {
-                    results.push(...this.getTranslationResults(query));
-                } else if (lowerQuery.includes('github') || lowerQuery.includes('гитхаб')) {
-                    results.push(...this.getGitHubResults(query));
-                } else {
-                    // Общие результаты поиска
-                    results.push(...this.getGeneralResults(query));
+                    results.push({
+                        title: `Новости "${query}"`,
+                        url: `https://news.google.com/search?q=${encodeURIComponent(query)}`,
+                        description: `Последние новости по запросу "${query}". Актуальные события и репортажи.`,
+                        icon: 'fas fa-newspaper'
+                    });
+                }
+                
+                // Погода
+                if (lowerQuery.includes('погода') || lowerQuery.includes('weather')) {
+                    results.push({
+                        title: `Погода "${query}"`,
+                        url: `https://www.google.com/search?q=${encodeURIComponent(query + ' погода')}`,
+                        description: `Прогноз погоды по запросу "${query}". Температура, осадки, ветер.`,
+                        icon: 'fas fa-cloud-sun'
+                    });
                 }
                 
                 return results;
-            }
-            
-            getNewsResults(query) {
-                return [
-                    {
-                        title: "Последние новости России и мира",
-                        url: "https://news.google.com",
-                        description: "Актуальные новости политики, экономики, спорта и культуры. События в России и мире.",
-                        icon: "fas fa-newspaper"
-                    },
-                    {
-                        title: "Новости дня - РИА Новости",
-                        url: "https://ria.ru",
-                        description: "Самые свежие новости России и мира. Фото и видео репортажи.",
-                        icon: "fas fa-broadcast-tower"
-                    },
-                    {
-                        title: "Новости технологий - TechCrunch",
-                        url: "https://techcrunch.com",
-                        description: "Новости из мира технологий, стартапов, гаджетов и инноваций.",
-                        icon: "fas fa-microchip"
-                    }
-                ];
-            }
-            
-            getWeatherResults(query) {
-                return [
-                    {
-                        title: "Погода в Москве - Яндекс.Погода",
-                        url: "https://yandex.ru/pogoda/moscow",
-                        description: "Точный прогноз погоды в Москве на сегодня и неделю. Температура, осадки, ветер.",
-                        icon: "fas fa-cloud-sun"
-                    },
-                    {
-                        title: "Прогноз погоды - Gismeteo",
-                        url: "https://www.gismeteo.ru",
-                        description: "Детальный прогноз погоды в России и мире. Карты погоды и климатические данные.",
-                        icon: "fas fa-cloud-rain"
-                    }
-                ];
-            }
-            
-            getGeneralResults(query) {
-                return [
-                    {
-                        title: `Результаты поиска "${query}" - Google`,
-                        url: `https://www.google.com/search?q=${encodeURIComponent(query)}`,
-                        description: `Найдите информацию в Google по запросу "${query}". Миллионы результатов на разных языках.`,
-                        icon: "fab fa-google"
-                    },
-                    {
-                        title: `"${query}" - Википедия`,
-                        url: `https://ru.wikipedia.org/wiki/${encodeURIComponent(query)}`,
-                        description: `Статья в свободной энциклопедии по теме "${query}". Подробная информация и ссылки.`,
-                        icon: "fab fa-wikipedia-w"
-                    },
-                    {
-                        title: `Видео по запросу "${query}" - YouTube`,
-                        url: `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`,
-                        description: `Смотрите видео на YouTube связанные с "${query}". Обучающие ролики, обзоры, музыка.`,
-                        icon: "fab fa-youtube"
-                    },
-                    {
-                        title: `Изображения "${query}" - Google Images`,
-                        url: `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`,
-                        description: `Картинки и фотографии по запросу "${query}". Высокое качество, разные размеры.`,
-                        icon: "fas fa-images"
-                    }
-                ];
-            }
-            
-            getVideoResults(query) {
-                return [
-                    {
-                        title: `Видео "${query}" - YouTube`,
-                        url: `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`,
-                        description: `Миллионы видео на YouTube по вашему запросу. Музыка, обучающие ролики, развлечения.`,
-                        icon: "fab fa-youtube"
-                    }
-                ];
-            }
-            
-            getMapResults(query) {
-                return [
-                    {
-                        title: "Карты Google",
-                        url: "https://www.google.com/maps",
-                        description: "Интерактивные карты всего мира. Поиск мест, маршруты, панорамы улиц.",
-                        icon: "fas fa-map-marked-alt"
-                    },
-                    {
-                        title: "Яндекс.Карты",
-                        url: "https://yandex.ru/maps",
-                        description: "Подробные карты России и мира. Построение маршрутов, пробки, организации.",
-                        icon: "fas fa-map"
-                    }
-                ];
-            }
-            
-            getTranslationResults(query) {
-                return [
-                    {
-                        title: "Google Переводчик",
-                        url: "https://translate.google.com",
-                        description: "Бесплатный перевод текстов и веб-страниц. Поддержка 100+ языков.",
-                        icon: "fas fa-language"
-                    }
-                ];
-            }
-            
-            getGitHubResults(query) {
-                return [
-                    {
-                        title: "GitHub - Крупнейший хостинг кода",
-                        url: "https://github.com",
-                        description: "Платформа для разработки и хостинга программного кода. Миллионы проектов.",
-                        icon: "fab fa-github"
-                    }
-                ];
             }
             
             addRelatedQueries(query) {
@@ -1142,14 +1671,16 @@
                     const relatedSection = document.createElement('div');
                     relatedSection.className = 'search-result';
                     relatedSection.style.background = 'rgba(59, 130, 246, 0.1)';
-                    relatedSection.style.borderColor = '#3b82f6';
+                    relatedSection.style.borderColor = 'var(--primary)';
                     
                     let html = `<div class="result-title"><i class="fas fa-lightbulb"></i> Связанные запросы</div>`;
                     html += `<div class="result-description" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">`;
                     
                     relatedQueries.forEach(relatedQuery => {
-                        html += `<span class="related-query" style="background: rgba(59, 130, 246, 0.2); padding: 5px 10px; border-radius: 20px; cursor: pointer; font-size: 14px;" 
-                                 onclick="window.skyBrowser.performSearch('${relatedQuery}')">${relatedQuery}</span>`;
+                        html += `<span class="related-query" style="background: rgba(59, 130, 246, 0.2); padding: 5px 10px; border-radius: 20px; cursor: pointer; font-size: 14px; transition: var(--transition);" 
+                                 onmouseover="this.style.background='rgba(59, 130, 246, 0.4)'" 
+                                 onmouseout="this.style.background='rgba(59, 130, 246, 0.2)'"
+                                 onclick="window.browser.performSearch('${relatedQuery}')">${relatedQuery}</span>`;
                     });
                     
                     html += `</div>`;
@@ -1160,20 +1691,22 @@
             }
             
             getRelatedQueries(query) {
-                const lowerQuery = query.toLowerCase();
+                const words = query.split(' ');
                 const related = [];
                 
-                if (lowerQuery.includes('новости')) {
-                    related.push('новости сегодня', 'последние новости', 'главные новости');
-                } else if (lowerQuery.includes('погода')) {
-                    related.push('погода москва', 'погода на неделю', 'прогноз погоды');
-                } else if (lowerQuery.includes('youtube')) {
-                    related.push('видео youtube', 'ютуб музыка', 'ютуб клипы');
-                } else {
-                    related.push(`${query} википедия`, `${query} видео`, `${query} картинки`);
+                if (words.length > 1) {
+                    // Варианты с другими словами
+                    for (let i = 0; i < words.length; i++) {
+                        const newQuery = [...words];
+                        newQuery.splice(i, 1);
+                        related.push(newQuery.join(' '));
+                    }
                 }
                 
-                return related.slice(0, 5);
+                // Общие связанные запросы
+                related.push(`${query} 2024`, `${query} скачать`, `${query} бесплатно`, `${query} онлайн`);
+                
+                return related.slice(0, 6);
             }
             
             openUrl(url, title = '') {
@@ -1182,53 +1715,80 @@
                     url = 'https://' + url;
                 }
                 
+                // Показываем прогресс-бар
+                this.showProgressBar();
+                
                 // Добавляем в историю
-                this.addToHistory(url, title || url);
+                if (this.settings.saveHistory) {
+                    this.addToHistory(title || url, url);
+                }
                 
                 // Обновляем URL-бар
                 document.getElementById('url-bar').value = url;
                 
                 // Показываем уведомление
-                this.showNotification(`Открываем: ${title || url}`, false, 'warning');
+                this.showNotification(`Открываем: ${title || url}`, 'info');
                 
-                // Открываем в новой вкладке (это рабочий способ!)
+                // Открываем в новой вкладке
                 setTimeout(() => {
                     window.open(url, '_blank');
+                    this.hideProgressBar();
                 }, 500);
             }
             
-            addToHistory(url, title) {
+            openNewTab() {
+                window.open(window.location.href, '_blank');
+                this.showNotification('Новая вкладка открыта', 'info');
+            }
+            
+            toggleFullscreen() {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => {
+                        this.showNotification(`Ошибка: ${err.message}`, 'error');
+                    });
+                } else {
+                    document.exitFullscreen();
+                }
+            }
+            
+            refresh() {
+                if (this.currentView === 'search') {
+                    this.performSearch(this.searchQuery, true);
+                    this.showNotification('Обновление результатов поиска', 'info');
+                } else {
+                    this.showHomePage();
+                }
+            }
+            
+            addToHistory(title, url) {
                 const historyItem = {
-                    url,
+                    id: Date.now(),
                     title,
+                    url,
                     timestamp: new Date().toISOString(),
                     time: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
                     date: new Date().toLocaleDateString('ru-RU')
                 };
                 
-                // Добавляем в начало массива
                 this.history.unshift(historyItem);
                 
-                // Ограничиваем историю 50 элементами
-                if (this.history.length > 50) {
-                    this.history = this.history.slice(0, 50);
+                if (this.history.length > 100) {
+                    this.history = this.history.slice(0, 100);
                 }
                 
-                // Сохраняем в localStorage
-                localStorage.setItem('skybrowser_history', JSON.stringify(this.history));
-                
-                // Обновляем отображение истории
+                localStorage.setItem('skybrowser_pro_history', JSON.stringify(this.history));
                 this.updateHistoryDisplay();
+                this.updateInfoPanel();
             }
             
             updateHistoryDisplay() {
-                const historyItems = document.getElementById('history-items');
-                if (!historyItems) return;
+                const historyList = document.getElementById('history-list');
+                if (!historyList) return;
                 
-                historyItems.innerHTML = '';
+                historyList.innerHTML = '';
                 
                 if (this.history.length === 0) {
-                    historyItems.innerHTML = '<div style="color: #94a3b8; text-align: center; padding: 20px;">История пуста</div>';
+                    historyList.innerHTML = '<div style="color: var(--text-secondary-color); text-align: center; padding: 40px;">История пуста</div>';
                     return;
                 }
                 
@@ -1245,12 +1805,13 @@
                 Object.keys(groupedHistory).forEach(date => {
                     const dateHeader = document.createElement('div');
                     dateHeader.style.gridColumn = '1 / -1';
-                    dateHeader.style.color = '#60a5fa';
+                    dateHeader.style.color = 'var(--primary)';
                     dateHeader.style.fontWeight = '600';
                     dateHeader.style.marginTop = '20px';
                     dateHeader.style.marginBottom = '10px';
+                    dateHeader.style.paddingLeft = '10px';
                     dateHeader.textContent = date;
-                    historyItems.appendChild(dateHeader);
+                    historyList.appendChild(dateHeader);
                     
                     groupedHistory[date].forEach(item => {
                         const historyItem = document.createElement('div');
@@ -1258,19 +1819,189 @@
                         historyItem.setAttribute('data-url', item.url);
                         historyItem.setAttribute('data-title', item.title);
                         
+                        // Определяем иконку по URL
+                        let icon = 'fas fa-globe';
+                        if (item.url.includes('google.com')) icon = 'fab fa-google';
+                        else if (item.url.includes('youtube.com')) icon = 'fab fa-youtube';
+                        else if (item.url.includes('github.com')) icon = 'fab fa-github';
+                        else if (item.url.includes('wikipedia.org')) icon = 'fab fa-wikipedia-w';
+                        
                         historyItem.innerHTML = `
-                            <div class="history-item-icon">
-                                <i class="fas fa-globe"></i>
+                            <div class="history-favicon">
+                                <i class="${icon}"></i>
                             </div>
-                            <div class="history-item-content">
-                                <div class="history-item-title">${item.title.substring(0, 50)}${item.title.length > 50 ? '...' : ''}</div>
-                                <div class="history-item-url">${item.url.substring(0, 60)}${item.url.length > 60 ? '...' : ''}</div>
-                                <div style="color: #64748b; font-size: 12px; margin-top: 4px;">${item.time}</div>
+                            <div class="history-content">
+                                <div class="history-title-text">${item.title.substring(0, 40)}${item.title.length > 40 ? '...' : ''}</div>
+                                <div class="history-url">${item.url.substring(0, 50)}${item.url.length > 50 ? '...' : ''}</div>
                             </div>
+                            <div class="history-time">${item.time}</div>
                         `;
                         
-                        historyItems.appendChild(historyItem);
+                        historyItem.onclick = () => this.openUrl(item.url, item.title);
+                        
+                        historyList.appendChild(historyItem);
                     });
+                });
+            }
+            
+            updateBookmarksDisplay() {
+                const bookmarksList = document.getElementById('bookmarks-list');
+                const bookmarksCount = document.getElementById('bookmarks-count');
+                const bookmarksSettingsCount = document.getElementById('bookmarks-settings-count');
+                
+                if (!bookmarksList) return;
+                
+                bookmarksList.innerHTML = '';
+                bookmarksCount.textContent = this.bookmarks.length;
+                bookmarksSettingsCount.textContent = this.bookmarks.length;
+                
+                if (this.bookmarks.length === 0) {
+                    bookmarksList.innerHTML = '<div style="color: var(--text-secondary-color); text-align: center; padding: 40px;">Закладок нет</div>';
+                    return;
+                }
+                
+                this.bookmarks.forEach(bookmark => {
+                    const bookmarkItem = document.createElement('div');
+                    bookmarkItem.className = 'history-item';
+                    bookmarkItem.setAttribute('data-url', bookmark.url);
+                    bookmarkItem.setAttribute('data-title', bookmark.title);
+                    
+                    let icon = 'fas fa-bookmark';
+                    if (bookmark.icon) icon = bookmark.icon;
+                    
+                    bookmarkItem.innerHTML = `
+                        <div class="history-favicon">
+                            <i class="${icon}" style="color: ${bookmark.color || 'var(--primary)'}"></i>
+                        </div>
+                        <div class="history-content">
+                            <div class="history-title-text">${bookmark.name}</div>
+                            <div class="history-url">${bookmark.url.substring(0, 50)}${bookmark.url.length > 50 ? '...' : ''}</div>
+                        </div>
+                        <div class="history-time" onclick="event.stopPropagation(); window.browser.removeBookmark('${bookmark.id}')">
+                            <i class="fas fa-trash" style="cursor: pointer;"></i>
+                        </div>
+                    `;
+                    
+                    bookmarkItem.onclick = () => this.openUrl(bookmark.url, bookmark.name);
+                    
+                    bookmarksList.appendChild(bookmarkItem);
+                });
+            }
+            
+            addCurrentToBookmarks() {
+                const url = document.getElementById('url-bar').value.trim();
+                const title = this.searchQuery || 'Без названия';
+                
+                if (!url) {
+                    this.showNotification('Введите URL для добавления в закладки', 'warning');
+                    return;
+                }
+                
+                const bookmark = {
+                    id: Date.now(),
+                    name: title,
+                    url: url.startsWith('http') ? url : 'https://' + url,
+                    icon: 'fas fa-bookmark',
+                    color: '#3b82f6',
+                    timestamp: new Date().toISOString()
+                };
+                
+                this.bookmarks.unshift(bookmark);
+                localStorage.setItem('skybrowser_pro_bookmarks', JSON.stringify(this.bookmarks));
+                
+                this.updateBookmarksDisplay();
+                this.showNotification(`Добавлено в закладки: ${title}`, 'success');
+            }
+            
+            removeBookmark(id) {
+                this.bookmarks = this.bookmarks.filter(b => b.id !== id);
+                localStorage.setItem('skybrowser_pro_bookmarks', JSON.stringify(this.bookmarks));
+                this.updateBookmarksDisplay();
+                this.showNotification('Закладка удалена', 'info');
+            }
+            
+            updateQuickLinks() {
+                const quickLinksContainer = document.getElementById('quick-links');
+                quickLinksContainer.innerHTML = '';
+                
+                this.quickLinks.forEach(link => {
+                    const linkElement = document.createElement('div');
+                    linkElement.className = 'quick-link';
+                    linkElement.setAttribute('data-url', link.url);
+                    linkElement.setAttribute('data-title', link.name);
+                    
+                    linkElement.innerHTML = `
+                        <div class="quick-link-icon" style="color: ${link.color}">
+                            <i class="${link.icon}"></i>
+                        </div>
+                        <div class="quick-link-text">${link.name}</div>
+                    `;
+                    
+                    linkElement.onclick = () => this.openUrl(link.url, link.name);
+                    
+                    quickLinksContainer.appendChild(linkElement);
+                });
+            }
+            
+            updateThemeSelector() {
+                const themeSelector = document.getElementById('theme-selector');
+                const themes = [
+                    { id: 'dark', name: 'Темная', preview: 'theme-dark' },
+                    { id: 'light', name: 'Светлая', preview: 'theme-light' },
+                    { id: 'blue', name: 'Синяя', preview: 'theme-blue' },
+                    { id: 'purple', name: 'Фиолетовая', preview: 'theme-purple' },
+                    { id: 'green', name: 'Зеленая', preview: 'theme-green' }
+                ];
+                
+                themeSelector.innerHTML = '';
+                
+                themes.forEach(theme => {
+                    const themeOption = document.createElement('div');
+                    themeOption.className = `theme-option ${this.settings.theme === theme.id ? 'active' : ''}`;
+                    themeOption.onclick = () => this.changeTheme(theme.id);
+                    
+                    themeOption.innerHTML = `
+                        <div class="theme-preview ${theme.preview}"></div>
+                        <div class="theme-name">${theme.name}</div>
+                    `;
+                    
+                    themeSelector.appendChild(themeOption);
+                });
+            }
+            
+            changeTheme(themeId) {
+                this.settings.theme = themeId;
+                document.body.setAttribute('data-theme', themeId);
+                this.saveSettings();
+                this.updateThemeSelector();
+                this.showNotification(`Тема изменена на: ${themeId}`, 'info');
+            }
+            
+            clearHistory() {
+                this.showModal('Очистить историю', 'Вы уверены, что хотите очистить всю историю просмотров?', () => {
+                    this.history = [];
+                    localStorage.removeItem('skybrowser_pro_history');
+                    this.updateHistoryDisplay();
+                    this.updateInfoPanel();
+                    this.showNotification('История очищена', 'success');
+                });
+            }
+            
+            clearCookies() {
+                this.showModal('Очистить куки', 'Вы уверены, что хотите очистить все cookies?', () => {
+                    // В реальном браузере здесь была бы очистка cookies
+                    this.showNotification('Cookies очищены (эмуляция)', 'success');
+                });
+            }
+            
+            resetSettings() {
+                this.showModal('Сбросить настройки', 'Вы уверены, что хотите сбросить все настройки к значениям по умолчанию?', () => {
+                    this.settings = this.getDefaultSettings();
+                    this.applySettings();
+                    this.saveSettings();
+                    this.updateThemeSelector();
+                    this.updateInfoPanel();
+                    this.showNotification('Настройки сброшены', 'success');
                 });
             }
             
@@ -1279,65 +2010,160 @@
                 
                 document.getElementById('home-page').classList.remove('hidden');
                 document.getElementById('search-results').classList.remove('active');
-                document.getElementById('history-section').classList.remove('active');
                 
                 document.getElementById('home-search').focus();
-                this.showNotification("Домашняя страница");
+                this.showNotification('Домашняя страница', 'info');
             }
             
-            showHistory() {
-                this.currentView = 'history';
+            togglePanel(panel) {
+                const panelElement = document.getElementById(`${panel}-panel`);
+                panelElement.classList.toggle('active');
                 
-                document.getElementById('home-page').classList.add('hidden');
-                document.getElementById('search-results').classList.remove('active');
-                document.getElementById('history-section').classList.add('active');
+                if (panel === 'history') {
+                    this.updateHistoryDisplay();
+                } else if (panel === 'bookmarks') {
+                    this.updateBookmarksDisplay();
+                }
+            }
+            
+            showContextMenu(e, target) {
+                e.preventDefault();
                 
-                this.updateHistoryDisplay();
-                this.showNotification("История просмотров");
+                this.contextMenuData = {
+                    url: target.getAttribute('data-url'),
+                    title: target.getAttribute('data-title') || target.textContent
+                };
+                
+                const contextMenu = document.getElementById('context-menu');
+                contextMenu.style.left = `${e.pageX}px`;
+                contextMenu.style.top = `${e.pageY}px`;
+                contextMenu.classList.add('active');
+                
+                // Привязываем действия контекстного меню
+                document.querySelectorAll('.context-item').forEach(item => {
+                    item.onclick = () => this.handleContextAction(item.getAttribute('data-action'));
+                });
+            }
+            
+            hideContextMenu() {
+                document.getElementById('context-menu').classList.remove('active');
+            }
+            
+            handleContextAction(action) {
+                if (!this.contextMenuData) return;
+                
+                const { url, title } = this.contextMenuData;
+                
+                switch(action) {
+                    case 'open':
+                        this.openUrl(url, title);
+                        break;
+                    case 'open-new-tab':
+                        window.open(url, '_blank');
+                        this.showNotification('Открыто в новой вкладке', 'info');
+                        break;
+                    case 'bookmark':
+                        const bookmark = {
+                            id: Date.now(),
+                            name: title,
+                            url: url,
+                            icon: 'fas fa-bookmark',
+                            color: '#3b82f6',
+                            timestamp: new Date().toISOString()
+                        };
+                        this.bookmarks.unshift(bookmark);
+                        localStorage.setItem('skybrowser_pro_bookmarks', JSON.stringify(this.bookmarks));
+                        this.updateBookmarksDisplay();
+                        this.showNotification('Добавлено в закладки', 'success');
+                        break;
+                    case 'copy':
+                        navigator.clipboard.writeText(url);
+                        this.showNotification('Ссылка скопирована', 'success');
+                        break;
+                    case 'share':
+                        if (navigator.share) {
+                            navigator.share({
+                                title: title,
+                                url: url
+                            });
+                        } else {
+                            navigator.clipboard.writeText(url);
+                            this.showNotification('Ссылка скопирована (шаринг не поддерживается)', 'info');
+                        }
+                        break;
+                }
+                
+                this.hideContextMenu();
+            }
+            
+            showModal(title, text, callback) {
+                document.getElementById('modal-title').textContent = title;
+                document.getElementById('modal-text').textContent = text;
+                document.getElementById('modal').classList.add('active');
+                this.modalCallback = callback;
+            }
+            
+            hideModal() {
+                document.getElementById('modal').classList.remove('active');
+                this.modalCallback = null;
+            }
+            
+            showProgressBar() {
+                const progressBar = document.getElementById('progress-bar');
+                progressBar.style.width = '30%';
+                
+                setTimeout(() => {
+                    progressBar.style.width = '70%';
+                }, 300);
+            }
+            
+            hideProgressBar() {
+                const progressBar = document.getElementById('progress-bar');
+                progressBar.style.width = '100%';
+                
+                setTimeout(() => {
+                    progressBar.style.width = '0%';
+                }, 300);
             }
             
             checkConnection() {
-                const statusElement = document.getElementById('connection-status');
-                
-                // Проверка соединения
-                if (navigator.onLine) {
-                    statusElement.innerHTML = '<i class="fas fa-wifi"></i> Онлайн';
-                    statusElement.style.color = '#10b981';
-                } else {
-                    statusElement.innerHTML = '<i class="fas fa-wifi-slash"></i> Офлайн';
-                    statusElement.style.color = '#ef4444';
-                }
-                
-                // Слушаем события изменения соединения
-                window.addEventListener('online', () => {
-                    statusElement.innerHTML = '<i class="fas fa-wifi"></i> Онлайн';
-                    statusElement.style.color = '#10b981';
-                    this.showNotification("Соединение восстановлено");
-                });
-                
-                window.addEventListener('offline', () => {
-                    statusElement.innerHTML = '<i class="fas fa-wifi-slash"></i> Офлайн';
-                    statusElement.style.color = '#ef4444';
-                    this.showNotification("Нет соединения с интернетом", true);
-                });
+                this.updateConnectionStatus(navigator.onLine);
             }
             
-            showNotification(message, isError = false, type = 'info') {
+            updateConnectionStatus(online) {
+                const statusElement = document.getElementById('connection-status');
+                
+                if (online) {
+                    statusElement.innerHTML = '<i class="fas fa-wifi"></i> Онлайн';
+                    statusElement.style.color = 'var(--success)';
+                } else {
+                    statusElement.innerHTML = '<i class="fas fa-wifi-slash"></i> Офлайн';
+                    statusElement.style.color = 'var(--danger)';
+                    this.showNotification('Нет соединения с интернетом', 'error');
+                }
+            }
+            
+            showNotification(message, type = 'success') {
+                if (!this.settings.notifications) return;
+                
                 const notification = document.getElementById('notification');
                 const notificationText = document.getElementById('notification-text');
                 const icon = notification.querySelector('i');
                 
                 notificationText.textContent = message;
                 
-                // Устанавливаем иконку и цвет в зависимости от типа
-                if (isError || type === 'error') {
-                    notification.className = 'notification notification-error';
+                // Устанавливаем класс в зависимости от типа
+                notification.className = 'notification';
+                if (type === 'error') {
+                    notification.classList.add('notification-error');
                     icon.className = 'fas fa-exclamation-circle';
                 } else if (type === 'warning') {
-                    notification.className = 'notification notification-warning';
+                    notification.classList.add('notification-warning');
                     icon.className = 'fas fa-exclamation-triangle';
+                } else if (type === 'info') {
+                    notification.classList.add('notification-info');
+                    icon.className = 'fas fa-info-circle';
                 } else {
-                    notification.className = 'notification';
                     icon.className = 'fas fa-check-circle';
                 }
                 
@@ -1346,6 +2172,24 @@
                 setTimeout(() => {
                     notification.classList.remove('show');
                 }, 3000);
+            }
+            
+            updateDisplays() {
+                this.updateQuickLinks();
+                this.updateThemeSelector();
+                this.updateBookmarksDisplay();
+                this.updateInfoPanel();
+            }
+            
+            updateInfoPanel() {
+                document.getElementById('browser-version').textContent = this.settings.version;
+                document.getElementById('total-visits').textContent = this.settings.totalVisits;
+                document.getElementById('history-count').textContent = this.history.length;
+                document.getElementById('bookmarks-settings-count').textContent = this.bookmarks.length;
+            }
+            
+            saveSettings() {
+                localStorage.setItem('skybrowser_pro_settings', JSON.stringify(this.settings));
             }
             
             getRussianPlural(number, titles) {
@@ -1358,13 +2202,9 @@
             }
         }
         
-        // Инициализация браузера при загрузке страницы
+        // Инициализация браузера
         document.addEventListener('DOMContentLoaded', () => {
-            window.skyBrowser = new SkyBrowser();
-            
-            console.log("SkyBrowser загружен и готов к работе!");
-            console.log("Введите поисковый запрос или URL в строку поиска");
-            console.log("Браузер откроет сайты в новой вкладке");
+            window.browser = new SkyBrowserPro();
         });
     </script>
 </body>
