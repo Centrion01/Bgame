@@ -1,1 +1,596 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickChat | Общение в реальном времени</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #00a884;
+            --secondary-color: #f0f2f5;
+            --message-out: #d9fdd3;
+            --message-in: #ffffff;
+            --text-primary: #111b21;
+            --text-secondary: #667781;
+            --border-color: #e9edef;
+            --chat-bg: #efeae2;
+            --header-bg: #f0f2f5;
+            --sidebar-bg: #ffffff;
+        }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0d1418 0%, #1f2c34 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-primary);
+        }
+
+        .app-container {
+            width: 90%;
+            max-width: 1400px;
+            height: 90vh;
+            background-color: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+        }
+
+        /* Сайдбар */
+        .sidebar {
+            width: 30%;
+            min-width: 300px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 16px;
+            background-color: var(--header-bg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary-color), #1fa588);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 22px;
+        }
+
+        .icons-header {
+            display: flex;
+            gap: 25px;
+            color: var(--text-secondary);
+            font-size: 20px;
+        }
+
+        .search-box {
+            padding: 12px;
+            background-color: var(--header-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .search-container input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 15px;
+            color: var(--text-primary);
+        }
+
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .chat-item {
+            display: flex;
+            padding: 14px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .chat-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .chat-item.active {
+            background-color: #f0f2f5;
+        }
+
+        .chat-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .chat-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .chat-name {
+            font-weight: 600;
+            font-size: 17px;
+            margin-bottom: 4px;
+        }
+
+        .chat-last-message {
+            color: var(--text-secondary);
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 180px;
+        }
+
+        .chat-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Основная область чата */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--chat-bg);
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%2300a884' fill-opacity='0.03' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+
+        .chat-header {
+            padding: 16px;
+            background-color: var(--header-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-contact {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .contact-name {
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .contact-status {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .chat-actions {
+            display: flex;
+            gap: 25px;
+            color: var(--text-secondary);
+            font-size: 20px;
+        }
+
+        .messages-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            max-width: 65%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            position: relative;
+            word-wrap: break-word;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .message-out {
+            align-self: flex-end;
+            background-color: var(--message-out);
+            border-top-right-radius: 0;
+        }
+
+        .message-in {
+            align-self: flex-start;
+            background-color: var(--message-in);
+            border-top-left-radius: 0;
+        }
+
+        .message-text {
+            font-size: 15px;
+            line-height: 1.4;
+        }
+
+        .message-time {
+            text-align: right;
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            margin-left: 8px;
+            display: inline-block;
+            float: right;
+        }
+
+        .input-area {
+            padding: 12px 20px;
+            background-color: var(--header-bg);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .input-container {
+            flex: 1;
+            background-color: white;
+            border-radius: 24px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .input-container input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 16px;
+            color: var(--text-primary);
+        }
+
+        .input-icons {
+            display: flex;
+            gap: 20px;
+            color: var(--text-secondary);
+            font-size: 22px;
+        }
+
+        .send-button {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .send-button:hover {
+            background-color: #008f75;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 900px) {
+            .app-container {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+            }
+            .sidebar {
+                min-width: 280px;
+            }
+        }
+
+        /* Скроллбар */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cccccc;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #aaaaaa;
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message {
+            animation: fadeIn 0.2s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Сайдбар с чатами -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="user-avatar">ИЯ</div>
+                <div class="icons-header">
+                    <i class="fas fa-users"></i>
+                    <i class="fas fa-comment-alt"></i>
+                    <i class="fas fa-ellipsis-v"></i>
+                </div>
+            </div>
+            
+            <div class="search-box">
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Поиск или новый чат">
+                </div>
+            </div>
+            
+            <div class="chat-list">
+                <!-- Активный чат -->
+                <div class="chat-item active">
+                    <div class="chat-avatar" style="background: linear-gradient(45deg, #ff6b6b, #ee5a52);">АК</div>
+                    <div class="chat-info">
+                        <div class="chat-name">Анна К.</div>
+                        <div class="chat-last-message">Отличные новости! Жду завтра в офисе.</div>
+                    </div>
+                    <div class="chat-meta">
+                        <div>17:45</div>
+                        <div><i class="fas fa-check-double" style="color: #00a884;"></i></div>
+                    </div>
+                </div>
+                
+                <!-- Другие чаты -->
+                <div class="chat-item">
+                    <div class="chat-avatar" style="background: linear-gradient(45deg, #48dbfb, #0abde3);">ПС</div>
+                    <div class="chat-info">
+                        <div class="chat-name">Павел С.</div>
+                        <div class="chat-last-message">Скинул тебе файл с презентацией</div>
+                    </div>
+                    <div class="chat-meta">
+                        <div>15:22</div>
+                        <div><span style="background-color: #00a884; color: white; border-radius: 50%; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; font-size: 11px;">2</span></div>
+                    </div>
+                </div>
+                
+                <div class="chat-item">
+                    <div class="chat-avatar" style="background: linear-gradient(45deg, #ff9ff3, #f368e0);">ММ</div>
+                    <div class="chat-info">
+                        <div class="chat-name">Мария М.</div>
+                        <div class="chat-last-message"><i class="fas fa-microphone"></i> Голосовое сообщение</div>
+                    </div>
+                    <div class="chat-meta">
+                        <div>Вчера</div>
+                    </div>
+                </div>
+                
+                <div class="chat-item">
+                    <div class="chat-avatar" style="background: linear-gradient(45deg, #feca57, #ff9f43);">КГ</div>
+                    <div class="chat-info">
+                        <div class="chat-name">Команда разработки</div>
+                        <div class="chat-last-message">Иван: Задеплоили обновление на прод</div>
+                    </div>
+                    <div class="chat-meta">
+                        <div>Пт</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Основная область чата -->
+        <div class="chat-area">
+            <div class="chat-header">
+                <div class="chat-contact">
+                    <div class="chat-avatar" style="background: linear-gradient(45deg, #ff6b6b, #ee5a52);">АК</div>
+                    <div>
+                        <div class="contact-name">Анна К.</div>
+                        <div class="contact-status">была в сети сегодня в 16:30</div>
+                    </div>
+                </div>
+                <div class="chat-actions">
+                    <i class="fas fa-search"></i>
+                    <i class="fas fa-paperclip"></i>
+                    <i class="fas fa-ellipsis-v"></i>
+                </div>
+            </div>
+            
+            <div class="messages-container" id="messagesContainer">
+                <!-- Входящие сообщения -->
+                <div class="message message-in">
+                    <div class="message-text">Привет! Как дела с проектом? 👋</div>
+                    <div class="message-time">16:28</div>
+                </div>
+                
+                <!-- Исходящие сообщения -->
+                <div class="message message-out">
+                    <div class="message-text">Всё идёт по плану! Заканчиваю последние правки. Думаю, к вечеру закончу.</div>
+                    <div class="message-time">16:30 <i class="fas fa-check-double" style="color: #00a884;"></i></div>
+                </div>
+                
+                <div class="message message-in">
+                    <div class="message-text">Отлично! Можешь прислать предварительную версию? Хочу показать директору завтра утром.</div>
+                    <div class="message-time">16:32</div>
+                </div>
+                
+                <div class="message message-out">
+                    <div class="message-text">Конечно! Скину тебе ссылку на прототип через час. Там уже всё работает, кроме пары мелких деталей.</div>
+                    <div class="message-time">16:33 <i class="fas fa-check-double" style="color: #00a884;"></i></div>
+                </div>
+                
+                <div class="message message-in">
+                    <div class="message-text">Супер! Жду 👍</div>
+                    <div class="message-time">16:34</div>
+                </div>
+                
+                <div class="message message-out">
+                    <div class="message-text">Кстати, смотрела новые фичи в Figma? Там добавили интересные возможности для прототипирования.</div>
+                    <div class="message-time">16:40 <i class="fas fa-check-double" style="color: #00a884;"></i></div>
+                </div>
+                
+                <div class="message message-in">
+                    <div class="message-text">Да, видел! Особенно понравились расширенные возможности анимации. Надо будет попробовать в следующем проекте.</div>
+                    <div class="message-time">16:45</div>
+                </div>
+            </div>
+            
+            <div class="input-area">
+                <div class="input-icons">
+                    <i class="far fa-grin-beam"></i>
+                    <i class="fas fa-paperclip"></i>
+                </div>
+                
+                <div class="input-container">
+                    <input type="text" id="messageInput" placeholder="Введите сообщение...">
+                    <i class="far fa-microphone"></i>
+                </div>
+                
+                <div class="send-button" id="sendButton">
+                    <i class="fas fa-paper-plane"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const messageInput = document.getElementById('messageInput');
+            const sendButton = document.getElementById('sendButton');
+            const messagesContainer = document.getElementById('messagesContainer');
+            
+            // Функция отправки сообщения
+            function sendMessage() {
+                const text = messageInput.value.trim();
+                if (text === '') return;
+                
+                // Создаем элемент сообщения
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message message-out';
+                
+                const now = new Date();
+                const timeString = now.getHours().toString().padStart(2, '0') + ':' + 
+                                  now.getMinutes().toString().padStart(2, '0');
+                
+                messageDiv.innerHTML = `
+                    <div class="message-text">${text}</div>
+                    <div class="message-time">${timeString} <i class="fas fa-check" style="color: #667781;"></i></div>
+                `;
+                
+                // Добавляем сообщение в контейнер
+                messagesContainer.appendChild(messageDiv);
+                
+                // Очищаем поле ввода
+                messageInput.value = '';
+                
+                // Прокручиваем вниз
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                
+                // Имитация ответа через 1-3 секунды
+                setTimeout(() => {
+                    const replyDiv = document.createElement('div');
+                    replyDiv.className = 'message message-in';
+                    
+                    const replies = [
+                        "Понял, спасибо!",
+                        "Интересно, обдумаю.",
+                        "Хорошо, договорились!",
+                        "Отличная идея!",
+                        "Спасибо за информацию!"
+                    ];
+                    
+                    const randomReply = replies[Math.floor(Math.random() * replies.length)];
+                    
+                    replyDiv.innerHTML = `
+                        <div class="message-text">${randomReply}</div>
+                        <div class="message-time">${(now.getHours() % 24).toString().padStart(2, '0')}:${(now.getMinutes() + 1).toString().padStart(2, '0')}</div>
+                    `;
+                    
+                    messagesContainer.appendChild(replyDiv);
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }, 1000 + Math.random() * 2000);
+            }
+            
+            // Отправка по кнопке
+            sendButton.addEventListener('click', sendMessage);
+            
+            // Отправка по Enter
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            // Клик по чатам в сайдбаре
+            document.querySelectorAll('.chat-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    // Убираем активный класс у всех чатов
+                    document.querySelectorAll('.chat-item').forEach(chat => {
+                        chat.classList.remove('active');
+                    });
+                    
+                    // Добавляем активный класс текущему чату
+                    this.classList.add('active');
+                    
+                    // Меняем заголовок чата
+                    const chatName = this.querySelector('.chat-name').textContent;
+                    document.querySelector('.contact-name').textContent = chatName;
+                    
+                    // Очищаем поле ввода
+                    messageInput.value = '';
+                    messageInput.focus();
+                });
+            });
+            
+            // Фокус на поле ввода при загрузке
+            messageInput.focus();
+        });
+    </script>
+</body>
+</html>
